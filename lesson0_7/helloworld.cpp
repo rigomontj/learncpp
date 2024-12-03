@@ -1,10 +1,7 @@
 #include <iostream>
-#include <string>
 
 int main()
 {
-	std::string text;
-	std::cin >> text;
-	std::cout << text << "\n";
+	std::cout << "Hello world!\n";
 	return 0;
 };
