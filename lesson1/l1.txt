@@ -1,0 +1,334 @@
+Lesson 1
+--------
+
+A computer program is a sequence of instructions to tell the computer what to do.
+A statement is a type of instruction that cause the program to perform some action.
+Statements are the most common type of instruction in C++, since they are the smallest independent
+unit of computation in C++.
+
+They act like sentences in natural language.
+Most statements end in a ;
+a single C++ statement may compile into multiple machine language instructions.
+
+types of statements in C++:
+Declaration
+Jump
+Expression
+Compound
+Selection (conditionals)
+Iteration (loops)
+Try blocks
+
+Statements are grouped into units called functions.
+
+RULE:
+	Every C++ Program must have a special function named main() in all lowercase.
+
+when you run ./a.out, the statements in main() are executed in sequential order.
+programs terminate usually when the last statement in main has been executed.
+functions are the most common organizing tool in a program.
+
+Nomenclature:
+add () to the end of a function name to differentiate it.
+
+the name of a function is called its identifier.
+
+Lesson 2
+--------
+
+WARNING:
+	Don't use multiline comments inside other multiline comments.
+
+Comments are used to either explain what something does, why it does it (like that) or how it does it.
+WHAT, WHY, HOW
+
+Comment you code liberally and write your comments as if speaking to someone who has no idea what the code does.
+Don't assume you'll remember because you probably won't.
+
+When commenting out a line of code for testing without it, add a tab.
+//	commented out line of code;
+
+it can be useful for keeping older versions of code you want to replace.
+
+library program or function, use comments to describe WHAT.
+library program or function, use comments to describe HOW.
+statement, use comments to describe WHY.
+
+Lesson 3
+--------
+
+Programs manipulate data (read change write)
+data is any information that can be moved processed or stored by a computer
+a single piece of data is called a value like 'a', 5 or "Hello"
+
+The main memory in a computer is called Random Access Memory / RAM.
+When we run a program, the OS loads the program into RAM.
+Any data hardcoded into the program itself, like "Hello world!" is loaded at this point.
+The OS also reserves some additional RAM for the program to use while running.
+It can be used to store values entered by the user, read from the network or from a file.
+or store values calculated while running
+RAM is like a series of numbered boxes that can be used to store data while the program runs.
+
+In C++, we dicourage directly accessing memory by their 'box number',
+Instead, we access it indirectly through an object.
+
+An object represents a region of storage (RAM, or a CPU register), that can hold a value
+We don't say:
+Go get the value stored in box number 7532
+We say
+Go get the value stored by this object
+and let the compiler figure out where and how to retrieve the value.
+This means we focus on using objects to store and retrieve values and not where 
+in memory those objects are actually being placed.
+
+Although objects can be anonymous, we usually give them an identifier.
+An object with a name is called a variable.
+
+SO:
+	An object is used to store a value in memory.
+	A variable is an object that has an identifier.
+	Naming our objects let us refer to those objects again later.
+
+Usually, object means either an unnamed object in memory, a variable or a function,
+In C++, a function is NOT an object.
+
+defining a variable:
+A definition statement can be used to tell the compiler that we want to use a variable in our program.
+int x; // defines a variable with the 'x' identifier, of type integer
+
+At compile-time, compiler takes a note that we want a variable named x of type int.
+Compiler takes care of the memory allocation size, in what kind of storage (CPU or RAM), where it will be placed relative
+to other objects, when will it be created and destroyed, etc...
+a variable is DEFINED.
+
+At runtime when the program is loaded into memory and run
+each object is given an actual store location that it can use to store values.
+reserving storage for an object's use is called allocation.
+When allocation has occurred, the object has been created and can be used.
+
+SO:
+	An object is created once actual storage has been reserved for the object's use.
+
+A data type or type determines what kind of value the object will store.
+
+an integer is a number that can be written without a fractional component, so 5, -12...
+In C++, the type of an object must be known at compile-time, and that type cannot be changed without
+recompiling the program. This means an int variable can only hold ints.
+
+SO:
+	The data type of an object must be known at compile-time
+	so the compiler knows how much memory that object requires.
+
+double width: //define a variable named width of type double
+
+C++ allows you to create your own custom types. It's part of what makes C++ powerful.
+
+Best practice:
+	define multiple variables in a separate statement on its own line.
+
+A variable's type is used to determine HOW the value in memory should be interpreted.
+Variables are actually created at runtime, when memory is allocated for their use.
+
+Lesson 4
+--------
+
+After a variable is defined, like
+int a;
+
+you can give it a value using the = operator. This process is called
+assignment, and the = is called the assignment operator.
+copies the right side value into the left side variable
+This is called copy-assignment.
+
+//define variable width and direct list initialize with initial value 5
+int width { 5 };
+
+//define variable width and copy initialize it with value 5
+int width = 5;
+
+direct list initialization is better for type-safety and to avoid unintended conversions.
+
+int a; // default-initialization (no initializer)
+// traditional initialization forms:
+int b = 5; // copy initialization
+int c ( 6 ); // direct initialization
+// modern initialization forms (preferred):
+int d { 7 }; // direct-list initialization
+int e {}; // value initialization
+
+differences and use cases will be explained later.
+
+default-initialization leaves the variable with a value that is not predictable. It performs no initialization.
+copy-initialization is inherited from the C language,
+it is now less efficient for complex types.
+still used for readability or by older/C programmers.
+
+Copy-initialization is the initialization method that is used whenever values are implicitly copied, such as when passing
+arguments to a function by value, returning from a function by value, or catching exceptions by value.
+
+direct-initialization
+int a ( 5 );
+it is also less efficient. However it has its use cases.
+With its parentheses, it makes it hard to differentiate with functions.
+
+THE MODERN WAY TO INITIALIZE
+objects in C++ is to use a form of init that makes use of curly braces.
+It's called list-initialization or uniform initialization or brace initialization.
+It comes in two forms:
+int a { 5 }; //direct-list-initialization PREFERRED
+int b = { 6 }; //copy-list-initialization RARELY USED
+
+int a = 5; //can be confused with a = 5;
+int c ( 6 ); //can be confused with function a(5);
+
+direct list and copy list provide a consistent intiailization syntax.
+
+SO:
+	When we see curly braces, we know we're creating and initializing an object.
+
+It also produces a diagnostic if you try to initialize a value that the variable can not safely hold 
+So curly braces disallow narrowing conversions.
+
+SO:
+	List-initialization (int a = { 5 }; OR int a { 5 };) is generally preferred over the other
+	initialization forms because it works in most cases and is therefore most consistent.
+	It disallows narowwing conversions which we normally don't want and it support initialization
+	with a list of values.
+
+Best practice:
+	Prefer direct-list-initialization (int a { 5 };) when initializing your variables with one or
+	more values.
+
+List init is recommend by Bjarne Stroustrup creator of C++ and Herb Sutter C++ expert.
+When you're experienced enough, you can decide between int a = 5; int a ( 5 ); int a { 5 }; int a = { 5 }; 
+For now, use int a { 5 };
+
+Value-init and zero-init
+
+int a { 0 }; //if you will use that value
+int a {}; //if that value is temporary and will be replaced
+
+SO:
+	initialize your variables upon creation;
+	int a { 0 }; or int a {};
+
+Instantiation means a variable has been created(allocated) and initialized. An instantiated object
+is sometimes called an instance. Usually this term is used for class type objects.
+
+int a = 4, b = 5; // OK
+int a, b = 5; // a != 5;
+
+initializing a variable but not using it will generate a compiler warning and if -Werror, an error
+sometimes you might want to keep some unused variables for math like gravity or pi.
+In that case, C++17 provides the [[maybe_unused]] attribute.
+
+In future lessons, we'll often define variables we don't use again to demonstrate the syntax. this attribute
+allows us to do so without compilation warnings/errors.
+
+Lesson 5
+--------
+
+<< insertion operator
+<< used multiple times << concatenates (link together) multiple pieces of output
+
+newline is an OS specific character or sequence of character that moves the cursor to the start of the new line.
+std::cout << std::endl;
+
+The last std::endl isn't technically necessary but has a few purposes.
+Indicates that this is the end of this "thought", like '.' in a natural language sentence.
+Makes sure that if we add additional lines of output that they are on a new line.
+some OS do not output a new line before showing the command prompt again.
+
+Best practice:
+	Output a newline whenever a line of output is complete.
+
+std::cout is buffered
+This means that if your program crashes, aborts or is paused like for debugging purposes before the buffer is flushed,
+any output still waiting in the buffer will not be displayed.
+
+SO:
+	The opposite of buffered output is unbuffered output. With unbuffered output, each individual output request
+	is sent directly to the output device.
+	Writing data to a buffer is typically fast, whereas transferring a batch of data to an output device is
+	comparatively slow. Buffering can significantly increase performance by batching multiple output requests
+	together to minimize the number of times output has to be sent to the output device.
+
+std::endl vs '\n'
+std::endl outputs a newline AND flushes the buffer.
+It means that if we output multiple lines of text ending in endl we get multiple flushes which is slow
+and unnecessary.
+C++'s output system self-flushes periodically, it's more efficient and simpler to let him flush itself.
+
+In C++, we use '' for single characters and "" for text (zero or more characters)
+Even though '\n' is represented in our code as TWO symbols, the compiler treats it as a single linefeed (LF) character
+with ASCII value 10, and thus is conventionally single quoted.
+When '\n' is output, the library doing the outputting is responsible for translating this single LF character into
+the appropriate OS specific newline sequence.
+
+IN STANDARD OUTPUT STATEMENTS,
+although unconventional, "\n" is okay or even better.
+Simpler to double-quote all outputted text rather than thinking about which one to double and single quote.
+Helps avoid inadvertent multicharacter literals. will see it in lesson4.11
+IN NON OUTPUT CASES
+Single quotes should be preferred.
+
+Best practice:
+	use \n instead of std::endl when outputting text to the console.
+
+>> extraction operator
+
+st::cin reads input from keyboard
+
+std::cin << a << b << c;
+will get 3 values separated by space, tab or newline.
+
+iostream does not provide a way to accept keyboard inputs without the user pressing enter,
+You need third party libraries for that.
+
+std::cin is buffered.
+
+outputting data is a two stage process:
+the data from each output request is added to the end of an output buffer.
+later, data from the front of the output buffer is flushed to the output device (the console).
+
+SO:
+	Adding data to the END of a buffer and removing it from the FRONT of a buffer ensures data is processed
+	in the same order in which it was added, This is sometimes called FIFO First In First Out.
+
+Inputting data is also a a two stage process:
+the data (individual characters) from each input is added to the end of an input buffer inside std::cin
+the enter key pressed to submit the data is also stored as a '\n' character.
+later, the extraction operator >> removes data (characters) from the front of the input buffer
+ and converts them into a value that is assigned via copy-assignment 
+ to the associated variable. 
+
+SO:
+	Each line of input data in the input buffer is terminated by a '\n' character.
+
+SO:
+	std::cin is buffered because it allows us to separate the entering of input from the extract of input.
+	We can enter input once and then perform multiple extraction requests on it.
+
+Here is a simplified view of how the extractor operator >> works.
+1. First, leading whitespaces (space tabs and newlines) are discarded from the input buffer.
+This will discard any unextracted newline character remaining from a prior line of input.
+2. If the input buffer is now empty, operator >> will wait for the user to enter more data. Leading whitespace
+is again discarded.
+3. >> then extracts as many consecutive characters as it can, until it encounters either a newline character
+representing the end of the line of input or a character that is not valid for the variable being extracted to.
+
+If any characters were extracted in step 3 above, extraction is a success. The extracted characters are
+converted into a value that is then copy-assigned to the variable.
+If no characters could be extracted in step 3 above, extraction has failed. the object being extracted TO
+is copy-assigned the value 0 (as of C++11), and any future extractions will immediately fail (until std::cin is cleared)
+
+Any non-extracted characters including newlines remain available for the next extraction attempt.
+More on lesson 9.5
+
+operator<< vs operator>>
+std::cin and std::cout ALWAYS go on the left side of the operator
+std::cout is used to output a value cout = character output
+std::cin is used to input a value cin = character input
+<< is used with cout and shows the direction the data is moving
+>> is used with cin and shows the direction the data is moving
+
