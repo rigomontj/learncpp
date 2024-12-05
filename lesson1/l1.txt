@@ -332,3 +332,620 @@ std::cin is used to input a value cin = character input
 << is used with cout and shows the direction the data is moving
 >> is used with cin and shows the direction the data is moving
 
+initialized = the object is given a known value at the point of definition
+assignment = the object is a given a know value beyond the point of definition
+uninitialized = the object has not been given a known value yet
+int x; is uninitialized
+
+In modern cases where memory is not an issue, you should always initialize your variables because the cost of doing so
+is minuscule compared to the benefit.
+
+TLDR: always initialize your variables;
+
+Undefined behavior
+
+Using the value from an unitialized variable is our first example of underfined behavior. UB is the result of 
+executing code whose behavior is not well-defined by the C++ language, it doesn't have any rules for that case.
+
+Signs of UB:
+Different results each time it is run.
+Consistent incorrect result.
+inconsistent in correct and incorrect.
+seems like it is working but incorrect later in the program.
+crashes, now or later.
+works on some compilers but not others.
+works until you change some seemingly unrelated code.
+all this, but it might still work anyways.
+
+C++ contains many cases that can result in UB if not careful.
+We'll take note of them, make sure to avoid them.
+For now, we know of one UB - uninitialized variables: avoid them.
+
+Some UB are accepted by compiler extensions. by using -pedantic-errors, you make sure
+UB defined in the C++ standard produces an error from your compiler.
+
+Implementation:
+A specific compiler and the associated standard library it comes with are called an implementation.
+the C++ standard can sometimes allow the implementation to determine how some aspects of the language will behave,
+so that the compiler can choose a behavior that is efficient for a given platform.
+behavior that is defined by the implementation is called implementation-defined behavior.
+
+implementationdefinedbehavior.cpp produces 4 on most platforms but 2 on some other.
+avoid UB and IDB because even on the same compiler, it can stop working as expected
+if you change settings that affect how the implementation behaves.
+
+Lesson 7
+--------
+
+C++ reserves a set of 92 words (as of C++23) for its own use.
+These are called keywords (or reserved words) that each have a special meaning within the C++ language.
+
+    alignas
+    alignof
+    and
+    and_eq
+    asm
+    auto
+    bitand
+    bitor
+    bool
+    break
+    case
+    catch
+    char
+    char8_t (since C++20)
+    char16_t
+    char32_t
+    class
+    compl
+    concept (since C++20)
+    const
+    consteval (since C++20)
+    constexpr
+    constinit (since C++20)
+    const_cast
+    continue
+    co_await (since C++20)
+    co_return (since C++20)
+    co_yield (since C++20)
+    decltype
+    default
+    delete
+    do
+    double
+    dynamic_cast
+    else
+    enum
+    explicit
+    export
+    extern
+    false
+    float
+    for
+    friend
+    goto
+    if
+    inline
+    int
+    long
+    mutable
+    namespace
+    new
+    noexcept
+    not
+    not_eq
+    nullptr
+    operator
+    or
+    or_eq
+    private
+    protected
+    public
+    register
+    reinterpret_cast
+    requires (since C++20)
+    return
+    short
+    signed
+    sizeof
+    static
+    static_assert
+    static_cast
+    struct
+    switch
+    template
+    this
+    thread_local
+    throw
+    true
+    try
+    typedef
+    typeid
+    typename
+    union
+    unsigned
+    using
+    virtual
+    void
+    volatile
+    wchar_t
+    while
+    xor
+    xor_eq
+
+special identifiers: override, final, import, module
+they have specific meaning when in certain contexts but not reserved otherwise
+
+You've met int and return.
+these keywords and special identifiers define the entire C++ language (preprocessor commands excluded).
+
+Identifier naming rules:
+name of (variable or function, type, or other kind of item...) is called an identifier.
+CANNOT BE
+	a keyword. they are reserved. ex: your variable cannot be named int;
+	composed of something other than letters, LETTERS, numbers, _ (underscore)
+HAS TO
+	start with a letter or LETTER or _ (underscore). can't start with a number
+	be mindful of uppercase and lowercase. CASE SENSITIVE. nValue != nvalue != NVALUE 
+
+Now you know how you CAN name a variable, let's see how you SHOULD name a variable (or function)
+variable names should begin with a lowercase letter, if it is a single word or an acronym,
+write it in all lowercase.
+ex: nasa, iso, input, count, value
+
+Most often, function names also start with lowercase even though some disagree.
+main starts with lowercase so we do it for every other function
+
+Identifiers starting with an upercase letter are typically used for user-defined types like structs, classes, enumerations...
+
+for multiple words, either separate each word with an _ (snake_case) or intercapped (camelCase)
+int variable_name_using_snake_case;
+int variableNameUsingCamelCase;
+int function_name_snake;
+int functionNameCamel;
+
+In learncpp, we'll use intercapped (camelCase)
+C++ standard uses snake_case for variables and functions.
+Some people use variable_names functionNames
+
+If you work on someone else's code, match their style.
+
+Best practice:
+	When working in an existing program, use the conventions of that program (even if they don't conform to
+	modern best practices). Use modern best practices when you're writing new programs.
+
+ALSO
+You should avoid naming identifiers starting with an _
+those are reserved for OS, library and compiler use.
+Pick a meaningful name. Make the length of the identifier proportional to how widely it is used.
+i for a counter used once, nameOfTheUsefulFunction() for a function used 30 times in different parts of your code
+
+examples of good and bad identifier:
+int ccount //BAD what does c stand for?
+int customerCount //GOOD clear what we're counting
+int i //OKAY if trivial use, otherwise BAD
+int index //OKAY if obvious what you're indexing
+int totalScore //OKAY if only one thing being scored, otherwise ambiguous
+int _count //BAD underscore is reserved for OS, library and compiler
+int count //OKAY if obvious, but count what?
+int data //BAD what kind of data?
+int time //BAD seconds, minutes, hours ?
+int minutesElapsed //GOOD
+int value1, value2 //OKAY, hard to differentiate which is which
+int numApples //GOOD
+int monstersKilled //GOOD
+int x, y //OKAY if trivial, otherwise BAD
+
+avoid abbreviations that are not commonly used or obvious they make your code faster to write but harder to read.
+code is read more than written.
+
+For variable declarations, it is useful to use a comment to describe what a variable is going to be used for,
+or to explain anything else that might not be obvious. For example, say we’ve declared a variable named numberOfChars
+that is supposed to store the number of characters in a piece of text. Does the text “Hello World!”
+have 10, 11, or 12 characters? It depends on whether we’re including whitespace or punctuation.
+Rather than naming the variable numberOfCharsIncludingWhitespaceAndPunctuation, which is rather lengthy,
+a well placed comment on or above the declaration line should help the user figure it out.
+
+Lesson 8
+--------
+
+Whitespace and basic formatting
+
+Whitespace defines characters that are used for formatting purposes.
+in C++: spaces, tabs and newlines.
+It is used to separate certain language elements, inside text, and to format code.
+
+Some elements must be separated by whitespace, for example a variable type and identifier
+int a;
+or a function return type and identifier
+void function();
+
+VALID but unconventional:
+int        x;
+int 				 	 	 	 y;
+             	int
+ z;
+
+preprocessor directives:
+#include <iostream>
+#include <string> //must be done on separate lines.
+
+Inside quoted texts, "      		" is different than " "
+Also, NEWLINES ARE NOT ALLOWED in quoted text.
+
+std::cout << "Hello
+		world!"; //not allowed
+
+std::cout << "Hello "
+		"world!"; //allowed
+
+Whitespace is generally ignored otherwise, just makes it easier to read.
+
+#include <iostream>
+int main()
+{
+	std::cout << "Hello world!\n";
+	return 0;
+} //is better than
+
+#include <iostream>
+int main(){std::cout<<"Hello world!\n";return 0;}
+
+C++ does not enforce any kind of formatting restrictions on the programmer.
+It is a whitespace-independent language.
+It causes disagreements sometimes. We recommend the one style that produces the most readable
+and consistent code.
+
+some people use space, others use tab etc...
+
+vimrc set to 4 spaces for tabs
+
+two schools, one for less vertical whitespace and more code on screen
+
+int main() {
+	return 0;
+}
+
+and one more common
+int main()
+{
+	return 0;
+}
+
+here we'll use the second one.
+
+add a tab for every line inside curly braces. like return 0 in the last main.
+lines shouldn't be too long, 80 characters is the standard.
+added vimrc column color at 76 characters to be centered to webcam.
+
+keep your lines less than 80 characters.
+
+//this is good
+std::cout << 3 + 4
+	+ 5 + 6
+	* 7 * 8;
+//not this
+std::cout << 3 + 4 +
+	5 + 6 *
+	7 * 8;
+//operators at start of line not a the end.
+
+use whitespace to align values or comments laterally and add vertical space
+between blocks of code
+
+//GOOD start of example
+cost 			= 0;
+costPerClient 	= 56;
+clients 		= 33;
+
+productId 		= 0;
+productsSold 	= 9844;
+
+apples 			= 5;
+oranges 		= 19;
+
+std::cout << "Hello world!\n"; 					// cout lives in the iostream library
+std::cout << "It is very nice to meet you!\n"; 	// these comments make the code hard to read
+std::cout << "Yeah!\n"; 						// especially when lines are different lengths
+//end of example
+
+//harder to read
+// cout lives in the iostream library
+std::cout << "Hello world!\n";
+// these comments make the code hard to read
+std::cout << "It is very nice to meet you!\n";
+// especially when all bunched together
+std::cout << "Yeah!\n";
+
+//easier to read
+// cout lives in the iostream library
+std::cout << "Hello world!\n";
+
+// these comments are easier to read
+std::cout << "It is very nice to meet you!\n";
+
+// when separated by whitespace
+std::cout << "Yeah!\n";
+
+Use the clang-format to automatically format your code and
+keep it consistent.
+CLANG FORMATTING AUTOMATIC NOT ADDED
+
+Lesson 9
+--------
+
+What are "Hello world!" and '5' ?
+They are literals. a literal or literal constant is a fixed value that has
+been directly inserted into the source code.
+
+literals and variables both have a value and a type. unlike a variable,
+the value of a literal is fixed thise is why they are called constant.
+
+Literals are values that are inserted directly into the source code.
+These values usually appear directly in the executable code (unless
+they are optimized out).
+Objects and variables represent memory locations that hold values.
+These values can be fetched on demand.
+
+operators
+
+in math, an operation is a process involving 0 or more input values
+called operands that produces a new value called an output value.
+the specific operation to be performed is denoted by a symbol called an
+operator.
+2 + 3 = 5
+the literals 2 and 3 are operands, and the symbol + is the operator
+that tells us to apply mathetmatical addition on the operands to prpduce
+the new value 5.
+
+added cppman.
+use inside vim:
+	:!cppman string
+	//for man page on string from the standard library.
+	//sourced from cppreference.com so it's up to date with last
+	//standard update. Can be changed to cplusplus.com with cppman -s
+
+in C++, = is an operator as well as insertion<< extraction>> and
+equality== while most operators have symbols for names,
+there are also some that are keywords like new, delete and throw.
+
+for explanations, its usual to write + as operator+ and the extraction
+operator as operator>>
+
+The number of operands an operator takes is called it's ARITY.
+in C++ there exist 4 arities.
+
+unary operators act on one operand.
+ex: operator-
+	-5 takes literal operand 5 and flips its sign to produce new output
+	value -5.
+
+binary operators act on two operands called left and right.
+ex: operator+
+	3 + 4 takes left operand 3 and right operand 4 and applies
+	mathematical addition to produce new output value 7.
+	or
+	operator<< taking std::cout left and the value to output on the right
+
+ternary operators on 3 operands. only one exists in C++ the conditional
+operator.
+
+nullary operators act on zero operands. only one in C++ it's the throw
+operator.
+
+note: some operators have more than one meaning depending on their usage
+like operator- can be used in unary context to invert a number's sign
+and in binary context for substracting.
+
+Operators can be chained together such that the output of one operator
+can be used as the input for another operator.
+2 * 3 + 4
+^^^^^
+returns 6
+    6 + 4
+6 is now left operand for operator+
+
+we'll dig deeper on order of execution in the operator lesson.
+For now, know that they do so in the usual mathematical order.
+parenthesis, exponent, mult&div, add&sub
+mnemonic Please Excuse My Dear Aunt Sally
+
+Most operators in C++ just use their operands to calculate a return value.
+-5 produces return value -5 and 2 + 3 produces return value 5.
+some operators do not produce return values like delete and throw.
+
+some operators have additional behaviors than returning values, those are 
+called side effects.
+x = 5 has the side effect of assigning value 5 to variable x.
+
+In C++, the term “side effect” has a meaning: it is an observable
+effect of an operator or function beyond producing a return value.
+
+We use certain operators (e.g. the assignment operator) primarily for their
+side effects (rather than the return value those operators produce).
+
+Both operator= and operator<< (when used to output values to the console)
+return their left operand. Thus, x = 5 returns x, and std::cout << 5 return
+std::cout. This is done so that these operators can be chained.
+
+For example, x = y = 5 evaluates as x = (y = 5). First y = 5 assigns 5
+to y. This operation then returns y, which can then be assigned to x.
+
+std::cout << "Hello " << "world!" evaluates as 
+(std::cout << "Hello ") << "world!". This first prints "Hello " to the
+console. This operation returns std::cout, which can then be used to print 
+world!" to the console as well.
+
+expressions.cpp
+
+all these initializers make use of an expression.
+
+an expression is a non empty sequence of literals, variables, operators
+and function calls that calculate a value.
+
+The process of executing an expression is called evaluation, and the
+resulting value produced is called the result of the expression or return
+value.
+
+The result of an expression can be a value (most common), an object or 
+function, or nothing like void function();
+
+when an expression is evaluated, each of the terms inside the expression 
+are evaluated, until a single value remains.
+
+2               // 2 is a literal that evaluates to value 2
+"Hello world!"  // "Hello world!" is a literal that evaluates to text "Hello world!"
+x               // x is a variable that evaluates to the value held by variable x
+2 + 3           // operator+ uses operands 2 and 3 to evaluate to value 5
+five()          // evaluates to the return value of function five()
+
+std::cout << x; // has side effect of printing x but evaluates to std::cout
+
+SO:
+	Wherever a single value is expected in C++, you can use a value-producing
+	expression instead, and the expression will be evaluated to produce
+	a single value.
+
+expressions do not end in ; and cannot be compiled by themselves.
+expressions are always evaluated as part of statements.
+
+int x { 2 + 3 };	// 2+3 is an expression that evaluates to 5, has no ;
+					// and is part of a statement
+type indeitifier { expression };
+
+the x = 5 is used for its side effect more than its expression/value it
+produces.
+
+We can take any expression (such as x = 5), and turn it into an expression
+statement (x = 5;) that will compile.
+
+When an expression is used in an expression statement, any result generated
+by the expression is discarded (because it is not used). For example, when
+the expression x = 5 evaluates, the return value of operator= is discarded.
+And that’s fine, because we just wanted to assign 5 to x anyway.
+
+You can also make an expression statement that's useless like 2 * 3;
+
+expressions like 2 + 3 have subexpressions like 2 and 3.
+compound expressions contain two or more uses of operators like 2 + 3 + 3
+a full expression is an expression that is not a subexpression.
+
+Statements are used when we want the program to perform an action.
+Expressions are used when we want the program to calculate a value.
+
+Lesson 11
+---------
+
+Best practice:
+New programmers often try to write an entire program all at once, and then
+get overwhelmed when it produces a lot of errors. A better strategy is to
+add one piece at a time, make sure it compiles, and test it. Then when
+you’re sure it’s working, move on to the next piece.
+
+Lesson X
+--------
+
+A statement is a type of instruction that causes the program to
+perform some action, usually terminated by a ;
+
+A function is a collection of statements that execute sequentially.
+every C++ program must include a special function called main.
+When you run your program, execution starts at the top of main.
+
+in programming, the name of a function (or object, type, template, etc...)
+is called its identifier.
+
+The rules that govern how elements of the C++ language are constructed is
+called syntax, A syntax error occurs when you violate those grammatical
+rules.
+
+Comments allow the programmer to leave notes in the code. C++ supports
+// single line comments and
+/*
+	block
+	comments
+*/
+
+Data is any information that can be moved, processed or stored by a computer.
+A single piece of data is called a value. a, 5 and Hello are values
+
+A variable is a named piece of memory that we can use to store values.
+In order to create a variable, we use a statement called a definition 
+statement. When the program is run each defined variable is instantiated,
+which means it is assigned a memory address.
+
+A data type tells the compiler how to interpret a piece of data into a 
+meaningful value. An integer is a number that can be written without a
+fractional component. like -4, 999, 0, or 2000000
+
+Copy assignment (via operator=) can be used to assign an already created
+variable a value.
+
+The process of specifying an initial value for an object is called
+initialization and the syntax used to initialize an object is called an
+initializer.
+
+Default initialization
+int a; // in most cases, indetermined value. May cause undefined behavior.
+Copy initialization
+int a = 5;
+Direct initialization
+int a ( 5 );
+Direct list initialization
+int a { 5 }; // narrowing conversions disallowed
+Copy list initialization
+int a = { 5 }; // narrowing conversions disallowed
+Value initialization
+int a {}; // usually performs zero initialization 
+
+Direct initialization is sometimes called parenthesis initialization
+and list initialization including value initialization is sometimes
+called uniform initialization or brace initialization.
+Use brace over other forms and initialization over assignment.
+
+Define variables in a separate statement once per line.
+
+std::cout and operator<< allow us to output the result of an expression
+to the console.
+
+std::endl outputs a newline character and flushes the output buffer.
+"\n" doesn't flush the buffer and lets the system decide when to flush.
+
+std::cin and operator>> allow us to get a value from the keyboard.
+
+a variable that wasnt given a value is called an uninitialized variable.
+Trying to get its value will result in undefined behavior.
+
+C++ reserves a set of names called keywords. They have specific meaning
+within the language and may not be used as variable names.
+
+a literal constant is a fixed value inserted directly into the source code.
+ex: 5 or "hello world!\n"
+
+an operation is a process involving zero or more input values (operands)
+what process is defined by the operator used. the result of an operation
+produces an output value.
+
+unary operators take one operands, binary two called left and right,
+ternary three, nullary zero.
+
+an expression is a sequence of literals variables operators and function
+calls that are evaluated to produce a single output value.
+The calculation of this output value is valled evaluation. The value
+produced is the result of the expression.
+
+An expression statement is a statement that only contains the result of
+an expression. It's essentially an expression turned into a statement by
+adding a semicolon ; at the end of it.
+
+When writing programs, add a few lines or a function, then compile, resolve
+any errors, make sure it works. Dont wait until you've written an entire
+program before compiling it for the first time.
+
+Focus on getting your code working. Once you're sure you are going to
+keep some bit of code, then you can spend time removing or commenting out
+temporary/debugging code, adding comments, handling error cases, formatting
+your code, ensuring best practices are followed, removing redundant logic...
+
+First draft programs are often messy and imperfect. Most code requires
+cleanup and refinement to be great !

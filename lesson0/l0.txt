@@ -367,6 +367,9 @@ GPT summary:
 
 In summary, compiling a C++ program involves checking for errors, translating source code into machine language, linking object files, and then building an executable. The process is followed by testing and debugging the program to ensure it works correctly.
 
+Lesson 9
+--------
+
 to compile a cpp file, use
 g++ name.cpp
 
@@ -380,3 +383,80 @@ to compile for release
 g++ -O2 -DNDEBUG
 OR
 g++ -O3 -DNDEBUG
+
+I ADDED ALISES,
+gpp
+for debug
+gppr
+for release
+
+Lesson 10
+---------
+
+Usually, compilers follow the C++ standard behavior, however, they often implement their own changes to the language, for better compatibility with
+other versions of C for example. Those changes are called compiler extensions.
+
+Writing a program that uses those extensions make it incompatible with the C++ standard. Those usually will not compile on a different compiler, or not run correctly.
+
+The thing is, those extensions are usually enabled by default.
+We recommend turning extensions OFF.
+
+ADDED -pedantic-errors option to gpp and gppr aliases to turn off compiler extensions
+
+Lesson 11
+---------
+
+If you have done something that definitely violates the rules of C++, then your program is ILL-FORMED
+If the compiler encounters any issue, it will emit a diagnostic message aka diagnostic.
+C++ does not define a standard for diagnostic messages. 
+
+Modern compilers on the other hand, adopted the following:
+a DIAGNOSTIC ERROR
+means the compiler has decided to halt compilation because it either cannot proceed or deems the error serious enough to stop.
+a DIAGNOSTIC WARNING
+means the compiler has decided not to halt compilation.
+The choice of categorization is usually compiler specific.
+
+To identify the issue, a diagnostic contains filename and line number and expectation vs what was found.
+Sometimes code doesnt violate C++ rules but still warns you because of your compiler.
+
+you can disable warnings you deem useless by excluding particular lines for your compiler temporarily
+
+Don't let warnings pile up. Resolve them as you encounter them AS IF they were errors. You might otherwise miss a warning that is really an error.
+You can choose your warning levels at which your compiler will notify you. By default they only notify you on most obvious issues.
+
+ADDED TO ALIASES
+-Wall -Weffc++ -Wextra -Wconversion -Wsign-conversion
+to increase warning levels.
+
+Treat warnings as errors to enforce self discipline of fixing warnings.
+ADDED -Werror TO ALIASES
+
+Lesson 12
+---------
+
+Compilers usually pick a standard version default, it is most of the times C++14 which lacks many latest and greatest features.
+Professionally, the standard choice is usually one or two versions old.
+For personal projects and learning, use the latest.
+
+Compilers usually offer preview support for features from the next standard to come out. They can be buggy.
+
+This website currently targets the C++17 standard. It also contains 20 and 23 content if your compiler supports it.
+When changing your language standard make the change to all build configurations.
+
+ADDED
+-std=C++23
+to ALIASES
+
+The C++ standards document is designed for compiler writers to implement new standards accurately. It is not free.
+You may find draft standards that are close enough to the official release here for free:
+https://www.open-std.org/jtc1/sc22/wg21/docs/standards
+
+The CPPReference website tracks compiler support for each feature per language standard.
+https://en.cppreference.com/w/cpp/compiler_support/23
+
+Lesson 13
+---------
+
+What language standard is my compiler using?
+
