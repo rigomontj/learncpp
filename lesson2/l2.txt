@@ -1,0 +1,586 @@
+Lesson 1
+--------
+
+A function is a reusable sequence of statements designed to do a job.
+
+Instead of putting everything in main, you split your program into
+small modular chunks. Functions you write yourself as opposed to
+C++ standard library functions are called user-defined functions.
+
+Imagine you're reading a book, when you remember you need to make a phone
+call. You put a bookmark in your book, make the phone call, and when you're
+done with the phone call, you return to the place you bookmarked and
+continue reading your book precisely where you left off.
+
+C++ programs can work the same way (and borrow some of the same 
+nomenclature). a program will be excuting statements sequentially inside
+one function when it encounters a function call.
+a function call tells the CPU to interrupt the current function and execute
+another function. The CPU essentially "puts a bookmark" at the current point
+of execution, executes the function named in the function call, and then
+returns to the point it bookmarked and resumes execution.
+
+Nomenclature:
+	The function initiating the function call is the CALLER,
+	the function being called (executed) is the CALLEE.
+	A function call is also sometimes called an INVOCATION,
+	with the caller INVOKING the callee.
+
+example: phone_call_read_book.cpp 
+
+like in readBook(), the parentheses after the identifier tell the compiler
+we're defining a function.
+
+The curly braces and statement in between are called the function body.
+
+To call a function, we use the function name followed by a set of
+parentheses convetionally without whitespace between identifier and first
+parenthese. readBook()
+
+For now, a function must be defined before it can be called, more on l2.7
+
+When you do a function call, don't forget the parentheses after the name
+If you forget, your program might not compile and/or the function will not
+be called.
+
+We start reading main()
+Because a function call was made, execution of statements in main()
+is suspended, and execution jumps to the top of readBook()
+Because a function call was made, execution of statements in readBook()
+is suspended, and execution jumps to the top of phoneCall()
+when phoneCall() terminates, execution returns back
+to the caller readBook() and continues from the point just beyond
+the function call.
+when readBook() terminates, execution returns back
+to the caller main()  and continues from the point just beyond
+the function call.
+
+In C++, you cannot nest functions, that is declaring a function inside
+another function.
+
+foo is a meaningless word that is often used as a placeholder name for a
+function or variable when the name is trivial to the demo of a concept.
+other common are bar baz and 3 letter words ending in oo like goo moo boo
+
+Lesson 2
+--------
+
+When a called function returns a value, the caller may decide to use that
+value in an expression or statement (by using it to initialize a variable,
+or sending it to std::cout) or ignore it by doing nothing else. If the
+caller ignores the return value, it is discarded (nothing is done with it)
+
+If you need to use the return value of a function call more than once,
+initialize a variable with the return value, and then use that variable 
+as many times as needed.
+
+in C++, main has to return an int, and explicit main() calls are disallowed.
+C does allow main() to be called explicitly, so some C++ compilers will
+too for compatibility reasons.
+
+in my case with g++, when you remove the -pedantic-errors option, it does
+compile, but creates an infinite loop for callMain.cpp -> segfault
+
+It is a common misconception that main() is the first function that execute
+Global variables are initialized prior to the execution of main.
+If the initializer for such a variable invokes a function, then that
+function will execute prior to main.
+
+Status codes:
+
+why do we return 0 from main ? When do we return something else?
+the return value from main is called a status code, exit code or return 
+code, it's used to signal whether your program was succesful or not.
+
+By convention:
+	main() should return 0 if the program ran normally.
+
+non-zero is used to indicate some kind of failure, even if that method
+is not guaranteed to be portable to every OS
+
+If you want to maximize portability, use only 0 or EXIT_SUCCESS to indicate
+a successful termination and EXIT_FAILURE to indicate an unsuccessful
+termination.
+
+see example statusCode.cpp
+
+The status code is passed back to the OS. the OS will typically make the 
+status code available to whichever program launched the program
+returning the status code. This provides a crude mechanism for any program
+launching another program to determine whether the launched program ran 
+successfully or not.
+
+A value returning function that does not return a value will produce an UB
+
+Best practice:
+	Make sure your functions with non-void return types return a value in
+	all cases.
+	Failures to return a value from a value returning function will
+	cause undefined behavior.
+
+function main will implicitly return 0 if no return statement is provided.
+but return 0; anyways for consistency.
+
+functions can only return a single value, but there are some workarounds.
+
+Since return value meaning can be anything form a status code to a value
+or nothing, commenting what the return value means.
+
+return input; // return the value the user entered, back to the caller
+
+If you do something twice or more, it might be the moment for a function:
+D.R.Y. Do not repeat yourself.
+
+This is the essence of modular programming. The ability to write a function
+test it and then know you can use it as many times as we want and it will
+continue to work.
+
+Best practice:
+	Variables can be used to store the results of calculations that need
+	to be used more than once.
+	Functions can be used to define a sequence of statements we want to
+	execute more than once.
+	Loops can be used to execute a statement more than once.
+	careful: Sometimes DRY can harm overall comprehension when code is
+	broken into pieces that are too small.
+
+the opposite of DRY is WET: Write everything twice.
+
+SO:
+	Return values provide a way for functions to return a single value 
+	back to the function's caller.
+	Functions provide a way to minimize redundancy in our programs.
+
+Lesson 3
+--------
+
+Functions are not required to return a value back to the caller. To tell
+the compiler that a function does not return a value, use return type void
+
+void printHi()
+{
+}
+
+It's called a non-value returning function or void function
+
+void functions will automatically return to the caller at the end of the 
+function. no return statement is needed.
+you can use
+return;
+in a void function to return to the caller at this point.
+
+Best practice:
+	putting return; at the end of a void function is redundant.
+
+void functions can't be used in expressions that require a value.
+
+// compile error: we can't call a function that returns void in this context
+std::cout << returnNothing();
+
+returning a value from a void function is also an error.
+
+Lesson 4
+--------
+
+An argument is a value that is passed from the caller to the function when
+a function call is made:
+
+function(argument1, argument2);
+
+A function parameter is a variable used in the header of a function. 
+Function parameters work almost identically to variables defined inside 
+the function, but with one difference: they are initialized with a value
+provided by the caller of the function.
+
+void function(int parameter1, int parameter2)
+{
+}
+
+When a function is called, all of the parameters of the function are
+created as variables, and the value of each of the arguments is copied
+into the matching parameter using copy initialization.
+This process is called pass by value. Function parameters that utilize pass
+by value are called value parameters.
+
+Note that the number of arguments must generally match the number of
+function parameters, or the compiler will throw an error.
+The argument passed to a function can be any valid expression 
+(as the argument is essentially just an initializer for the parameter, 
+and initializers can be any valid expression).
+
+function parameters not used in the body are called unreferenced parameters.
+
+void doSomething(int a)
+{
+}
+ generated an unused parameter warning.
+
+void doSomething(int)
+{
+}
+ did not (unnamed parameter)
+
+void doSomething(int /*oldParameterName*/) //C++ style guide recommendation
+
+We might be in this situation if we change the number of parameters
+after changing some code, and we can do this instead of changing every
+function call that now has too many or too little arguments.
+
+Operator++ and -- have prefix and postfix variants ex: ++foo --foo
+an unreferenced function parameter is used to differentiate
+whether an overload of such an operator is for the prefix or postfix case
+more in 21.8
+
+Best practice:
+	When a function parameter exists but is not used in the body of the
+	function, do not give it a name. You can optionally put a name inside
+	a comment
+
+Summary: function parameters and return values are the key mechanisms by
+which functions can be written in a reusable way. as it allows us to write
+functions that can perform tasks and return retrieved or calculated results
+back to the caller without knowing what the specific inputs or outputs are
+ahead of time.
+
+Lesson 5
+--------
+
+Local variables are variables defined inside the body of a function, 
+as opposed to global variables.
+
+//a, b and c are local variables.
+int function(int a, int b) 
+{
+	int c { 0 };
+	return 0;
+}
+
+Function parameters are created and initialized when the function is 
+entered, and variables within the function body are created and 
+initialized at the point of definition.
+
+int function(int a, int b) // a and b created and initialized here 
+{
+	int c { 0 }; // c created and initialized here
+	return 0;
+} // a b c destroyed here
+
+so, when is an instantiated variable destroyed ?
+Local variables are destroyed in the opposite order of creation at 
+the end of the set of curly braces in which it is defined or for a function
+at the end of function.
+
+an object's lifetime is defined to be the time between its creation and 
+destructon.
+Note that variable creation and destruction happen when the program is 
+running called runtime, not at compile time. Therefore, lifetime is a
+runtime property.
+
+In actuality, C++ gives compilers a lot of flexibility to determine when 
+local variables are created and destroyed. But for most, this is what 
+happens: Created when the function is entered, destroyed in the opposite
+order of creation when the function is exited.
+
+int main()
+{
+    int x{ 0 };    // x's lifetime begins here
+
+    doSomething(); // x is still alive during this function call
+
+    return 0;
+} // x's lifetime ends here
+
+when an object is destroyed, in most cases, nothing happens.
+The destroyed object simply becomes invalid.
+If the object is a class type object, prior to destruction a special
+function called a destructor is invoked, in many cases the destructor does 
+nothing in which case no cost is incurred. more on l15.4
+
+Any use of an object after it has been destroyed will result in undefined
+behavior.
+at some point after destruction, the memory used by the object will be
+deallocated (freed up for use).
+
+Local scope (block scope)
+An identifier's scope determines where the identifier can be seen and used
+within the source code. When an identifier can be seen and used, we say
+it is in scope.
+When an identifier cannot be seen, we can not use it, we say it is out of
+scope.
+Scope is a compile-time property, and trying to use an identifier when it
+is not in scope will result in a compile error.
+
+The identifier of a local variable has local scope. An identifier with 
+local scope technically called block scope is usable from the point of 
+definition to the end of the innermost pair of curly braces containing the
+identifier or for function parameters, the end of function.
+This ensures local variables cannot be used before the point of definition
+even if the compiler opts to create them before then, or after they are
+destroyed.
+Local variables defined in one function are also not in scope in other
+functions that are called.
+
+#include <iostream>
+
+// x is not in scope anywhere in this function
+void doSomething()
+{
+    std::cout << "Hello!\n";
+}
+
+int main()
+{
+    // x can not be used here because it's not in scope yet
+
+    int x{ 0 }; // x enters scope here and can now be used within this function
+
+    doSomething();
+
+    return 0;
+} // x goes out of scope here and can no longer be used
+
+in this program, x enters scope at the point of definition and goes out of
+scope at the end of the innermost pair of curly braces containing the 
+identifier which is closing curly brace of main(). note that variable x
+is not in scope anywhere inside of function doSomething().
+
+out of scope vs going out of scope
+an identifier is out of scope anywhere it cannot be accessed within the code
+in the example above the identifier x is in scope from its point of
+definition to the end of the main function, x is out of scope outside of
+that code region.
+
+the term going out of scope is typically applied to objects rather than
+identifiers, we say an object goes out of scope at the end of the scope
+(the end curly brace) in which the object was instantiated. in the example
+above the object named x goes out of scope at the end of function main.
+
+a local variable's lifetime ends at the point where it goes out of scope
+so local variables are destroyed at this point
+note that not all types of varialbes are destroyed when they go
+out of scope.
+
+remember lifetime is a runtime property and scope is a compile time property
+so although we talk about both in the same program, they are enforced
+at different points.
+
+in modern C++ the best practice is that local variables inside the function
+body should be defined as close to their first use as reasonable.
+
+Best practice:
+	Define your local variables as close to their first use as reasonable.
+
+Due to the limitations of older more primitive compilers, the C language
+used to require all local variables to be defined at the top of the
+function.
+This style is suboptimal for several reasons:
+the intended use for these variables isn't apparent at the point of
+definition.
+the intended initialization value may not be available at the top of the 
+function but might be later.
+There may be many lines between a variable's initializer and its first use
+if we dont remember what value it was initialized with, we have to scroll
+back to the top of the function.
+This restriction was lifted in the C99 language standard
+
+Best practice:
+	when a variable is needed within a function,
+	use a function parameter when the caller will pass in the
+	initialization value for the the variable as an argument.
+	use a local variable otherwise.
+
+a temporary object or anonymous object is an unnamed object that is used to
+hold a value that is only needed for a short period of time
+temporary objects are created by the compiler when they are needed.
+
+here's a way to create one:
+std::cout << getValueFromUser() << "\n"; // return value stored in a
+										 // temporary object
+
+SO:
+	Return by value returns a temporary object (that holds a copy of
+	the return value) to the caller.
+
+temporary objects have no scope at all since scope is an identifier property
+and temp objects don't have an identifier.
+temp objects are destroyed at the end of the expression in which they
+are created. they are destroyed before the next statement executes.
+
+In our example above, the temporary object created to hold the return value
+of getValueFromUser() is destroyed after
+std::cout << getValueFromUser() << '\n' executes.
+
+In the case where a temporary object is used to initialize a variable, the 
+initialization happens before the destruction of the temporary.
+
+in modern C++, especially since 17, the compiler hsa many tricks to avoid
+generating temporaries where previously it would have needed to.
+
+so, in our previous example, in C++17 the compiler can skip creationg and
+destruction of a temporary and use the return value to directly init the
+parameter of operator<<
+
+Lesson 6
+--------
+
+Why use other functions than main?
+In simple programs main is enough, but functions are useful for:
+Organization
+Reusability (DRY)
+Testing
+	less repeated code means less code to test for errors, and you know
+	what parts of code you can trust, so more focused testing
+Extensibility 
+	When we need to change our program to handle a new case
+	change it once in the function and that change takes effect everywhere.
+Abstraction
+	easier to understand to someone else
+
+What to use functions for:
+parts of code that appear more than once in your code or will appear more
+than once in your code. 
+code that has a well defined set of inputs and outputs is a good candidate
+for a function even if it's only done once. now it's ready to be reused here
+or in another program.
+a function should perform only one task.
+functions that are too long or complicated can be split in multiple
+sub functions: this is called refactoring.
+
+While learning C++, you will write programs that involve 3 most common 
+sub tasks:
+Reading inputs from the user
+Calculating a value from the inputs
+Printing the calculated value
+
+For longer programs, each of these is a good candidate for an
+individual function
+
+New programmers often combine calculating a value and printing 
+the calculated value into a single function. However, this violates the
+“one task” rule of thumb for functions. A function that calculates a value 
+should return the value to the caller and let the caller decide what 
+to do with the calculated value (such as call another function 
+to print the value).
+
+Lesson 7
+--------
+
+A forward declaration allows us to tell the compiler about the existence of
+an identifier before actually defining the identifier.
+
+To do that, we use a function declaration statement also called a function 
+prototype.
+
+example:
+int function(int x, int y);
+
+Why would we use forward declarations if you can just reorder your functions
+and calls ?
+Well most of the time, we use forward declarations to tell the compiler
+about the existence of some function that has been defined in a different
+code file. You can't reorder in that case now can you ?
+
+It can also be used to define our functions in an order agnostic manner
+This allows us to define functions in whatever order maximizes organization
+(like clustering related functions together) or reader understanding.
+Less often, functions call each other. forward declarations give us a way
+to resolve such circular dependencies.
+
+what happens if you don't declare the function?
+If you forward declare a function but don't call it, the program
+will compile and run fine. however, if a forward declaration is made
+and the function is called but the program never defines that function
+the program will compile but the linker will complain it can't resolve the
+function call.
+
+after testing with undefined.cpp, linker errors seem to follow a different
+syntax in console, seems to be only in white with no color compared
+to warning and errors from the compiler that use color.
+
+You can also forward declare variables and types with a different syntax.
+more later.
+
+whats the difference between declaration and definition?
+declarations:
+int addFunction(int x, int y);
+int a;
+definitions:
+int addFunction(int x, int y)
+{
+	int z { x + y };
+	return z;
+}
+int a;
+
+In C++ all definitions are declarations, therefore int a; is both a
+declaration and a definition.
+BUT, not all declarations are definitions, those that aren't definitions are
+called pure declarations, for example forward declarations;
+
+In common language, the term “declaration” is typically used to mean
+“a pure declaration”, and “definition” is used to mean “a definition that
+also serves as a declaration”. Thus, we’d typically call int x;
+a definition, even though it is both a definition and a declaration.
+
+When the compiler encounters an identifier it will check to ensure use of
+that identifier is valid (in scope, syntactically valid, etc...)
+
+In most cases, a declaration is sufficient to allow the compiler to ensure
+an identifier is being used properly. for example, when the compiler
+encounters the function call add(5, 6) if it has already seen the
+declaration for add(int, int), then it can validate that add is actually a
+function that takes two int parameters. it does not need to have actually
+seen the definition for function add (which may exist in some other file)
+
+however there are a few cases where the compiler must be able to see a full
+definition in order to use an identifier.
+
+summary:
+declaration:
+	tells compiler about an identifier and its associated type information
+	ex - int function(); int function() {}; int x;
+definition:
+	implements a function or instantiates a variable. defintions are also
+	declarations.
+	ex - int function() {}; int x;
+pure declaration:
+	a declaration that ISN'T a definition
+	ex - int function();
+initialization
+	provides an initial value for a defined object
+	ex = int x { 2 };	
+
+ODR one definition rule
+within a file, each function variable type or template in a given scope
+can only have one definition. get out of the scope and this doesn't violate
+that rule.
+within a program, ... can only have one definition. (because you can have
+multiple files) functions and variables not visible to the linker are
+excluded from this rule.
+types, templates, inline functions, and inline variables are allowed to
+have duplicate definitions in different files, so long as each definition is
+identical. We haven't covered what most of these things are yet so don't 
+worry about it.
+
+int add(int x, int y)
+{
+     return x + y;
+}
+// violation of ODR rule 1, we've already defined function add(int, int)
+int add(int x, int y)
+{
+     return x + y;
+}
+
+Functions that share an identifier but have different sets of parameters
+are also considered to be distinct functions, so 
+such definitions do not violate the ODR.
+
+int doMath(int, int, int, int);
+or
+int doMath(int first, int second, int third, int fourth);
+
+an issue between function forward declaration and function call will not
+compile and an issue between function forward declaration and function
+definition will cause a linker error.
+
