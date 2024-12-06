@@ -1,0 +1,1 @@
+#define SAY_HELLO
