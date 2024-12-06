@@ -584,3 +584,186 @@ an issue between function forward declaration and function call will not
 compile and an issue between function forward declaration and function
 definition will cause a linker error.
 
+Lesson 8
+--------
+
+When you add new code files to your project, give them a .cpp extension
+
+To compile multiple files, you need to
+gpp filename1.cpp filename2.cpp
+and forward declare needed function names
+
+Because the compiler compiles each code file individually
+(and then forgets what it has seen), each code file that uses 
+std::cout or std::cin needs to #include <iostream>.
+
+In the above example, if add.cpp had used std::cout or std::cin,
+it would have needed to #include <iostream>.
+
+Lesson 9
+--------
+
+Naming collisions and namespaces
+
+Let's say you're driving to a friend's house for the first time,
+and the address given to you is 245 Front Street in Mill City.
+Upon reaching Mill City, you take out your map only to discover that
+Mill City actually has two different Front Streets across town from
+each other.
+Which one would you go to ?
+Unless you had some clues like knowing it ws near the river, you'd have
+to call your friend and ask for more info. For this reason, city street 
+names and addresses are required to be unique.
+
+Similarly, C++ requires that all identifiers be non-ambiguous.
+Two identical identifiers will produce a compiler error. It is called
+a naming collision or naming conflict.
+
+If the colliding identifiers are introduced into the same file, the result
+will be a compiler error. If they are into separate files of the same 
+program, the result will be a linker error.
+
+Most naming collisions occur in two cases
+Two or more identically named functions or global variables are introduced
+into separate files belonging to the same program: linker error
+Two or more identically named functions or global variables sare introduced
+in the same file: compiler error
+
+Scope regions, like the body of a function, help avoid naming collisions
+the same way that 245 Front Street Mill City and 245 Front Street Jonesville
+is different.
+A scope region is an area of source code where all declared 
+identifiers are considered distinct from names declared in other scopes 
+(much like the cities in our analogy)
+
+Namespaces:
+A namespace provides another type of scope region called namespace scope
+that allows you to declare names inside of it for the purpose 
+of disambiguation. Any names declared inside the namespace won't be
+mistaken for identical names in other scope.
+
+SO:
+	A name declared in a scope region such as a namespace won't be 
+	mistaken for an identical name declared in another scope.
+
+Unlike functions which are designed to contain executable statements,
+only declarations and definitions can appear in the scope of a namespace
+For example, two identically named functions can be defined inside
+separate namespaces and no naming collision occurs.
+
+SO:
+	Only declarations and definitions can appear in the scope of a namespace
+	(not executable statements). However, a function can be defined inside
+	a namespace and that function can contain executable statements.
+
+Namespaces are often used to group related identifiers in a large project
+to help ensure they don't inadvertently collide with other identifiers.
+For example, if you put all your math functions inside of a namespace
+named math, then your math functions won't collide with identically
+named functions outside of the math namespace.
+Creating namespaces in another lesson.
+
+Global namespace:
+
+In C++, any name that is not defined inside a class function or namespace
+is considered to be part of an implictly defined namespace called the
+global namespace or global scope.
+
+In the example before, main() and both versions of getInteger() defined in
+both *.cpp files are DEFINED INSIDE THE GLOBAL NAMESPACE.
+This in turn violates the rule that all names in the scope must be unique.
+
+Two things to know for now:
+Identifiers declared inside the global scope are in scope from
+the point of declaration to the end of the file.
+Although variables can be defined in the global namespace, this should
+generally be avoided.
+
+The std namespace.
+When C++ was originally designed, all of the identifiers in the C++ standard
+library (including std::cin and std::cout) were available to be used without
+the std:: prefix (they were part of the global namespace). However,
+this meant that any identifier in the standard library could potentially 
+conflict with any name you picked for your own identifiers 
+(also defined in the global namespace). Code that was once working might
+suddenly have a naming conflict when you include a different part of the
+standard library (ex: you had a variable named foo, but you now include a 
+part of the std library that also has an identifier named foo).
+
+Or worse, code that compiles under one version of C++ 
+might not compile under the next version of C++, as new identifiers 
+introduced into the standard library could have a naming conflict with 
+already written code (added foo identifier to iostream in C++23 renders
+programs made before with variables named foo uncompilable).
+So C++ moved all of the functionality in the 
+standard library into a namespace named std (short for “standard”).
+
+Turns out, std::cout 's name isn't that, it's just cout, and std is the name
+of the namespace that identifier cout is part of.
+Because cout is defined in the std namespace, the name cout won't conflict
+with any objects or functions named cout that we create outside of the
+std namespace like the global scope.
+
+SO:
+	When accessing an identifier that is defined in a namespace, like cout in 
+	the std namespace, you need to tell the compiler that we're looking for
+	an identifier defined inside the namespace std.
+
+example:
+std::cout tells the compiler we are looking for an identifier cout living
+inside the namespace std.
+the :: symbol is an operator called the scope resolution operator
+the identifier to the left of the :: symbol identifies the namespace that
+the name to the right of the :: symbol is contained within.
+If not identifier to the left is provided, global namespace is assumed.
+
+Best practice:
+	Use explicit namespace prefixes to access identifiers defined in a
+	namespace.
+
+Another way of accessing identifiers inside of a namespace is to use
+a using-directive statement.
+
+using namespace std; // this is a using-directive that allows us to access
+					 // names in std namespace with no namespace prefix
+
+Many texts, tutorials, and even some IDEs recommend or use 
+a using-directive at the top of the program.
+However, used in this way, this is a bad practice, and highly discouraged.
+
+WARNING:
+	AVOID using-directives (such as 'using namespace std;') at the top
+	of your program or in header files. They violate the reason
+	why namespaces were even added in the first place.
+
+In C++, curly braces are often used to delineate a scope region that is
+nested within another scope region. For example a function defined
+inside the global scope region uses curly braces to separate the scope
+region of the function from the global scope.
+
+void foo(int x)
+{
+}
+	// x is part of the scope of the foo() function even though
+	// it is technically outside of its curly braces.
+	// it is not global scope.
+
+indentation is used for readability AND helps indicate it exists inside
+a separate scope region.
+
+use gcc/g++/gpp --save-temps to keep every intermediate file created during
+the compilation process for visualization purposes.
+also -v writes in console what's happening, no matter how incomprehensible
+it may be.
+
+Lesson 10
+---------
+
+Preprocessor
+When you compile your project, you might expect that the compiler compiles 
+each code exactly as you've written it. This actually isn't the case.
+
+Instead, before compilation each .cpp file goes through a preprocessing
+phase.
+During this phase, a program called the preprocessor makes various changes
+to the text of the code file. the preprocessor does not actuall
