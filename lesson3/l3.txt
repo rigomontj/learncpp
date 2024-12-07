@@ -1,0 +1,212 @@
+Lesson 2
+--------
+
+semantic errors: logical
+syntactic errors: syntax, usually picked up by the compiler
+
+All bugs stem from a simple premise: Something you thought was correct,
+isn't.
+
+Once you identify the problem, here's the debugging process:
+	Find the root cause of the problem (usually, the line of code
+	that's not working)
+	Ensure you understand why the issue is occuring
+	Determine how you'll fix the issue
+	Repair the issue causing the problem
+	Retest to ensure the problem has been fixed
+	Retest to ensure no new problems have emerged
+
+Lesson 3
+--------
+Strategies for debugging
+Most often, the time spent debugging is really just finding where the
+error is. Fixing is usually trivial in comparison, so here's how to find
+errors.
+---
+Code inspection:
+	We can approximate where the issue is likely to be, based on the nature
+	of the error (sorted from high to low)
+	and the way the program is structured (likely in our sorting algorithm)
+
+This works for easy programs, but complex ones tend to not work well
+with this strategy.
+
+Finally, bugs can be cause by making bad assumptions. It's almost impossible
+to visually spot a bug cause by a bad assumption since you're likely
+to make the same bad assumption when inspecting the code.
+---
+Finding problems by running the program:
+	Figure out how to reproduce the problem
+	Run the program and gather information to narrow down where the pb is
+	Repeat the prior step until you find the problem
+	---
+Reproducing the problem means making the problem appear in a consistent
+manner. It's obviously hard to find an issue unless you can observe it
+occurring.
+Sometimes it's easy, sometimes it's hard: it can only occur on some
+computers or in particular circumstances. In that case, generating a set of
+reproduction steps can be helpful.
+Reproduction steps are a list of clear and precise steps that can be
+followed to cause an issue to recur with a high level of predictability.
+The goal is to get as close to 100% as possible, even though a problem
+that exhibits itself in 50% of cases max can be diagnosed but will just
+take longer.
+	---
+Homing in on issues
+Once we can reasonably reprodce the problem, we must now find out where
+in the code the problem is.
+This time also, it can be easy of it can be hard:
+It's like your friend is trying to make you guess a number between 1-10
+and he can only answer if it's higher, lower, or the same.
+We can use a similar strategy in debugging our programs.
+We don't know where, but we know it must be somewhere between the start
+of the program and the first time it exhibits our problem.
+That at least rules out the parts of the program that exectue after the
+first observable symptom. We'll have to make some educated guesses.
+Usually, whatever caused us to notice the problem will give us an initial
+guess that's close to where the actual problem is.
+Example:
+	If at some point in our program, we can prove that the problem has not
+	occurred yet, this is like receiving a "too low" answer. We know it's
+	later in the program. If our program is crashing in the same place every
+	time, and we can prove that the program has not crashed at a particular
+	point in the execution of the program, then the crash must be later in
+	the code.
+	If at some point in our program we can observe incorrect behavior
+	related to the problem, then this is analogous to receiving a "too high"
+	answer. We know it must be before that. For example, if our program
+	prints the value of x, you were expecting the value 2 but got 8 instead
+	variable x must have the wrong value, if at some point in the execution
+	of the program we can see that the variable x has the value 8 already,
+	then we know the problem has to have occurred before that point.
+
+The hi-low analogy isn't perfect -- we can also sometimes remove entire
+sections of our code from consideration without gaining any information
+on whether the actual problem is before or after that point.
+
+We'll show examples of these cases soon.
+
+Eventually, enough guesses and good technique will lead to the exact line 
+causing the problem.
+You'll discover bad assumptions, and when you've excluded everything else
+the only thing left must be causing the problem, then just understand why.
+
+The best strategy depends on the type of bug.
+
+Lesson 6
+--------
+
+gdb useful commands
+
+first:
+
+note that gdb ./a.out will only work if your compiled you a.out with
+debugging options (case of my alias gpp)
+
+gdb ./a.out
+(start gdb with your executable file)
+
+lay n
+(will show layout with source code view and console)
+(press the enter key a few times until you get your desired view)
+(you can navigate through the source code with up and down arrow keys)
+
+b main
+	(OR)
+	b function_name_you_want_to_start_in
+	(OR)
+	b line_number_where_you_want_to_add_a_breakpoint
+(set breakpoint at start of main,function_name,or at line_number)
+
+r
+(run the program, if you don't have a breakpoint set, runs it like in
+console)
+
+n
+(step once without descending into functions)
+
+s
+(step once, descending into functions)
+
+up
+(get up from this function to the caller)
+
+down
+(get down from this function to the callee, only available after 'up')
+
+c
+(go to next breakpoint or end)
+
+fin
+(finish current function, loop etc...)
+
+p variable_name
+(print value of variable at this point note:before the line was executed)
+(can also p expression_like_4_+_5)
+
+h command
+(documentation for command)
+
+d
+(delete all breakpoints)
+
+d 32
+(delete breakpoint at line 32)
+
+display variable
+(will print variable after each step)
+
+i display
+(shows list of displayed variables)
+
+i b
+(shows list of breakpoints AND watchpoints)
+
+undisplay variable_id
+(note: undisplay only works with variable ids and not variable names)
+
+whatis variable
+(print variable type)
+
+watch variable
+(like display, but only shows when the value changes.)
+
+f
+(list info about the current stack frame)
+
+focus next
+(to use arrow keys for previous commands, focus next to put focus
+on other window to use arrow keys to scroll through the source code)
+
+Prefer using the standard library to writing your own code, when possible.
+
+Try to have functions that are 10 lines long or less.
+
+When refactoring your code, make behavioral changes OR structural changes.
+Doing both tends to lead to more errors that are harder to find.
+
+DEFENSIVE PROGRAMMING:
+Errors can be your own making as a programmer, but they can also be
+from the user. So with defensive programming you try to anticipate
+all the ways the software could be misused by users or other developers
+(including the programmer themselves) while using the code.
+These misuses can often be detected and then mitigated.
+
+	TESTING FUNCTIONS:
+you can print what function call results should be and what they are
+to make sure a function works correctly.
+you can do that in gdb by using the print (p) command with any expression,
+note that expressions can be function calls like myFunction(3, 5)
+
+unit testing is a method in which small units of code are tested to
+determine whether they are correct. you can use 3rd party or make your own,
+but to make your own we don't have enough features for now, so we'll do it
+later in lesson 9 with assert and static_assert
+
+Best practice:
+	use a static analysis tool on your programs to help find areas where
+	you code is non-compliant with best practices.
+	examples: clang-tidy cpplint cppcheck sonarlint
+	though gcc with strict options is enough for now
+
+
