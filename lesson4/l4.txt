@@ -1,0 +1,589 @@
+Lesson 1
+--------
+
+Variables are names for a piece of memory that can be used to store
+information. To recap briefly, computers have Random Access Memory that
+is available for programs to use. When a variable is defined, a piece of
+that memory is set aside for that variable.
+
+The smallest unit of memory is a binary digit (also called bit)
+
+which can hold a value of 0 or 1. You can think of a bit as being like
+a traditional light switch, either the light is off or the light is on.
+There is no in-between. If you were to look at a random segment of memory
+all you would see is 011010100011...
+Memory is organized into sequential units called memory addresses
+(or addresses for short) Similar to how a street address can be used to
+find a given house on a street, the memory address allows us to find
+and access the contents of memory at a particular location.
+
+Perhaps surprisingly, in modern computer architectures, each bit does not
+get its own unique memory address. This is because the number of memory
+addresses is limited, and the need to access data bit by bit is rare.
+Instead, each memory address holds 1 byte of data. A byte is a group of bits
+that are operated on as a unit. The modern standard is that a byte is
+comprised of 8 sequential bits.
+
+SO:
+	In C++, we typically work with byte-sized chunks of data.
+
+example:	address 3 - 11101110
+			address 4 - 10010101
+			address 5 - 00100010
+
+Data types
+
+Because all data on a computer is just a sequence of bits, we use a data
+type often called a type for short to tell the compiler how to interpret
+the contents of memory in some meaningful way. You have already seen
+one example of a data type: the integer. When we declare a variable as an
+integer, we are telling the compiler "the piece of memory that this
+variable uses is going to be interpret as an integer value"
+
+When you give an object a value, the compiler and CPU take care of encoding
+your value into the appropriate sequence of bits for that data type,
+which are then stored in memory (remember: memory can only store bits)
+For example, if you assign an integer object the value 65, the value is
+converted to the sequence of bits 0100 0001 and stored in the memory
+assigned to the object.
+
+Conversely, when the object is evaluated to produce a value, that
+sequence of bits is reconstituted back into the original value.
+Meaning that 0100 0001 is converted back into the value 65.
+
+Fortunately, the compiler and CPU do all the work here, so you generally
+don't need to worry about how values get converted into bit sequences and
+back
+All you need to do is pick a data type for your object that best matches
+your desired use.
+
+Fundamental data types:
+
+C++ come with built-in support for many different data-types.
+they are called fundamental data types, basic type, primitive typs or
+built-in types.
+
+TYPES				CATEGORY				MEANING				EXAMPLE
+
+double				Floating				A number with		3.14159
+long double			point					a fractional
+float										part
+
+bool				Integral				true or false		true
+					(Boolean)
+
+char
+wchar_t
+char8_t(C++20)		Integral				a single character
+char16_t(C++11)		(Character)				of text				'c'
+char32_t(C++11)
+
+int					Integral				positive and
+long in				(Integer)				negative whole		64
+long long int(C++11)						numbers, including
+short int									zero (0)
+
+std::nullptr_t		Null Pointer			a null pointer		nullptr
+(C++11)				
+
+void				Void					no type				n/a
+
+This chapter is dedicated to exploring these fundamental data types in
+detail. C++ also supports a number of other more complex types called
+compound types.
+
+Nomenclature:
+The terms integer and integral are similar but have slightly different
+meanings. In mathematics, an integer is a number with no decimal or
+fractional part, including negative and positive numbers and zero.
+In C++, the term integer is most often used to refer to the int data type
+which holds integer values. However it is also sometimes used to refer to 
+the broader set of data types that are commonly used to store and display
+integer values. this includes short, int, long, long long, and their signed
+and unsigned variants.
+The term integral means "like an integer". Most often, "integral" is used as
+part of the term "integral type", which includes the broader set of types
+that are stored in memory as integers, even though their behaviors might
+vary (which we'll see later in this chapter when we talk about the
+character types). This includes bool, the integer types and all the various
+character types.
+
+Most modern programming languages include a fundamental string type
+(a data type that lets us hold a sequence of characters, typically used
+to represent text) In C++, strings aren't a fundamental type, they're a
+compound type. But because basic stirng usage is straightforward and
+useful, we'll introduce string in the next chapter.
+
+The _t suffix
+Many of the types defined in newer C++ versions use a _t suffix.
+This suffix means type and it's a common nomenclature applied to
+modern types.
+If you see something with a _t suffix it's probably a type.
+But many types don't have a _t suffix, so this isn't consistently applied.
+
+Lesson 2
+--------
+
+Void means "no type"
+It is our first example of an incomplete type. An incomplete type is
+a type that has been declared but not yet defined.
+
+The compiler knows about the existence of such types, but does not
+have enough information to determine how much memory to allocate for
+objects of that type.
+Void is intentionally incomplete since it represents the lack of a type
+and thus cannot be defined.
+
+void variable;	// won't work, variables can't be defined with incomplete
+				// type void
+
+Void is used in a few different contexts:
+
+Functions that do not return a value.
+
+void writeValue(int x)
+{
+	std::cout << x;
+}
+
+Functions that do not take parameters (used in C, but not anymore)
+
+int getValue(void)
+{
+	int x {};
+	std::cin >> x;
+
+	return x;
+}
+
+Best practice: use an empty parameter list instead of void to indicate
+that a function has no parameters.
+
+Void pointers
+
+see in lesson 19.5
+
+Lesson 3
+--------
+
+Object sizes and sizeof operator
+
+Most objects take up more than 1 byte of memory, a single object may use
+1, 2, 4, 8 or even more consecutive memory addresses. The amount is based
+on its data type.
+
+Because we typically access memory through variable names the compiler is
+able to hide the details of how many bytes of data need to be retrieved
+(base on type) and will output the appropriate machine language 
+code to handle that detail for us.
+
+Even so, there are several reasons it is useful to know how much memory
+and object usees.
+
+First, the more memory an object uses, the most information it can hold.
+
+A single bit can hold 2 different values: 0 and 1.
+2 bits can hold 4 possible values. 00  01  10  11
+3 bits can hold 8 possible values. 000 001 010 011 100 101 110 111
+
+To generalize, an object with n bits (where n is an integer)
+can hold 2^n unique values. Therefore with an 8-bit byte, a byte-sized
+object can hold 2^8 = 256 values, 2 bytes can hold 65536 etc...
+
+Thus, the size of the object puts a limit on the amount of unique values
+it can store.
+
+Second, computers have a finite amount of free memory, every time we define
+an object, a small portion of the free memory is used for as long as the
+object is in existence. Because modern computers have a lot of memory, this
+impact is usually negligible, however, for programs that need a large amount
+of objects or data (like a game that is rendering millions of polygons)
+the difference between using 1 byte and 8 byte objects can be significant.
+
+SO:
+	New programmers often focus too much on optimizing their code to use
+	as little memory as possible. In most cases, this makes a negligible
+	difference. Focus on writing maintainable code and optimize only when
+	and where the benefit will be substantive.
+
+Fundamental data type sizes.
+
+Perhaps surprisingly, the C++ standard does not define the exact size in
+bits for any of the fundamental types.
+char must be 1 byte but no assumption is made that a byte is 8 bits.
+Integral types have a minimum bit size but could be larger.
+
+In this tutorial series, we will take a simplified view, by making some
+reasonable assumptions that are generally true for modern architectures
+
+A byte is 8 bits.
+Memory is byte addressable so the smallest object is 1 byte.
+Floating point support is IEEE-754 compliant.
+We are on a 32-bit or 64-bit architecture.
+
+Given that:
+
+GROUP	TYPES				CATEGORY				MEANING				EXAMPLE				MINIMUM SIZE				TYPICAL SIZE
+
+Float-  double				Floating				A number with		3.14159				8 bytes						8 bytes
+ing		long double			point					a fractional							8 bytes						8, 12 or 16 bytes
+point	float										part									4 bytes						4 bytes
+
+Boolean	bool				Integral				true or false		true				1 byte						1 byte (always exactly 1 byte)
+							(Boolean)
+
+Char-	char																				1 byte						1 byte
+acter	wchar_t																				1 byte						2 or 4 bytes
+		char8_t(C++20)		Integral				a single character						1 byte						1 byte
+		char16_t(c++11)		(character)				of text				'c'					2 bytes						2 bytes
+		char32_t(c++11)																		4 bytes						4 bytes
+
+Integer	int					Integral				positive and							2 bytes						4 bytes
+		long int			(integer)				negative whole		64					4 bytes						4 or 8 bytes
+		long long int(c++11)						numbers, including						8 bytes						8 bytes
+		short int									zero (0)								2 bytes						2 bytes
+
+Pointer	std::nullptr_t		null pointer			a null pointer		nullptr				4 bytes						4 or 8 bytes
+		(c++11)				
+
+
+Tip:
+	For maximum portability, you shouldn't assume that variables are larger than the specific minimum size
+	Alternatively if you want to assume that a type has a certain size (like an int is at least 4 bytes)
+	you can use static_assert to have the compiler fail a build it is compiled on an architecture where this
+	assumption is not true. more on lesson 9.6
+
+In order to determine the size of data types on a particular machine, C++
+provides an operator named sizeof that is unary and takes either a type
+or a variable, and returns its size in bytes.
+
+On modern machines, objects of the fundamental data types are fast,
+so performance while using or copying these types should generally not be
+a concern.
+
+You might assume that types that use less memory would be faster than types
+that use more memory, this is not always true.
+CPUs are often optimized to process data of a certain size (like 32 bits)
+and types that match that size may be processed quicker. On such a machine
+a 32-bit int could be faster than a 16-bit short or an 8-bit char.
+
+Signed integers
+
+An integer is an integral type that can represent positive and negative
+whole numbers, including 0 (ex: ...-2, -1, 0, 1, 2...)
+
+C++ has 4 primary fundamental integer types available for use:
+short int (min 16 bits)
+int (min 16 bits, but is typically 32 bits on modern architecture)
+long int (min 32 bits)
+long long int (64 bits)
+
+The key difference between the various integer types is that they have
+varying sizes -- the larger integers can hold bigger numbers.
+
+A reminder:
+	C++ only guarantees that integers will have a certain minimum size,
+	not that they will have a specific size. sizeof(type) to see
+	the byte size on your machine
+
+Technically, the bool and char types are considered to be integral types
+(because these types store their values as integer values)
+For the purpose of the next few lessons, we'll exclude these types from
+our discussion.
+
+When writing negative numbers in everyday life, we use a negative sign.
+For example -3 mean negative 3. we'd also typically recognize +3 as 
+positive 3 (though we usually omit plus prefixes)
+
+The attribute of being positive negative or zero is called the number's sign
+By default, integers in C++ are signed, which means the number's sign is
+stored as part of the value. Therefore, a signed integer can hold both
+positive and negative numbers (and 0).
+
+In this lesson, we'll focus on signed integers. We'll discuss unsigned
+integers (which can only hold non-negative numbers) in the next lesson.
+
+Here's the preferred way to define the four types of signed integers:
+
+short s;		// instead of short int
+int i;			
+long l;			// instead of long int
+long long ll;	// instead of long long int
+
+Although short int long int and long long int will work, we prefer the
+shorter names for these types. It makes it easier to distinguish
+from variables of type int.
+You can also add signed before that but it is redundant since integers
+are signed by default.
+
+Best practice:
+	Prefer the shorthand types that do not use the int suffix or signed
+	prefix
+
+Signed integer ranges:
+As you learned in the last section, a variable with n bits can hold
+2^n possible values. But which specific values? We call the set of
+specific values that a data type can hold its range.
+
+The range of an integer variable is determined by two factors:
+its size in bits and whether it is signed or not
+
+For example, an 8bit signed integer has a range of -128 to 127.
+
+SIZE/TYPE			RANGE
+8-bit signed		-128 127
+16-bit signed		-32768 32767
+32-bit signed		-2147483648 2147483647
+64-bit signed		-9223372036854775808 9223372036854775807
+
+an n-bit signed variable has a range of -(2^n-1) to (2^n-1)-1.
+n-1 because we have to store the sign, )-1 because we have to account for
+0;
+
+Overflow
+
+What happens if we try to assign the value 140 to an 8bit signed integer?
+This number is outside the range that an 8-bit signed integer can hold.
+The number 140 requires 9 bits to represent (8 magnitude bits and 1 sign
+bit) but we only have 8 bits available in an 8-bit signed integer.
+
+The C++20 standard makes this blanket statement:
+If during the evaluation of an expression, the result is not mathematically
+defined or not in the range of representable values for its type,
+the behavior is undefined.
+This is called overflow.
+
+Therefore, assigning value 140 to an 8-bit signed integer will result in
+undefined behavior.
+
+If an arithmetic operation (such as addition or multiplication) attemps to
+create a value outside the range that can be represented, this is called
+integer overflow (or arithmetic overflow). For signed integers, integer
+overflow will result in undefined behavior.
+
+We cover what happens when unsigned integers overflow in lesson 4.5 why
+avoid unsigned integers.
+
+If there is any suspicion that an object might need to store a value
+that falls outside its range, use a type with a bigger range!
+
+Integer division works as expected when the quotient is a whole number
+like 20 / 5 = 2
+
+if the result has a decimal point, whatever is after the point simply gets
+dropped (NOT ROUNDED UP OR DOWN)
+0.5 -> 0, 999.9 -> 999
+
+Warning:
+	You will lose any fractional parts of the quotient, but if that's 
+	what you want, integer division is safe to use, as the results are
+	predictable.
+
+13 / 5 = 2  			remainder 3 
+		(10 / 5 = 2) 	(13 - 10 = 3)
+-13 / 5 = -2  			remainder -3 
+		(-10 / 5 = -2) 	(-13 - -10 = -3)
+
+unsigned integers
+
+SIZE/TYPE			RANGE
+8-bit  unsigned		0 255
+16-bit unsigned		0 65535
+32-bit unsigned		0 4294967295
+64-bit unsigned		0 18446744073709551615
+
+A n-bit unsigned variable has a range of 0 to (2^n)-1
+When no negative numbers are required, unsigned integers are well-suited
+for networking and systems with little memory, because unsigned integers
+can store more positive numbers without taking up extra memory.
+
+see unsigned.cpp
+adding to an unsigned beyond its range "wraps around" starting at 0
+so if max is 50 and you add 1 which equal 51, that 51 becomes 0,
+52 becomes 1, 53 becomes 2, etc...
+This is sometimes called "modulo wrapping"
+
+usually, unsigned integer overflows happen when values become negative
+so it wraps around to the max unsigned int value...
+
+Many notable bugs in video game history happened due to wrap around 
+behavior with unsigned integers. In the arcade game Donkey Kong, 
+it’s not possible to go past level 22 due to an overflow bug that leaves 
+the user with not enough bonus time to complete the level.
+
+In the PC game Civilization, Gandhi was known for often being the 
+first one to use nuclear weapons, which seems contrary to his 
+expected passive nature. Players had a theory that Gandhi’s aggression 
+setting was initially set at 1, but if he chose a democratic government, 
+he’d get a -2 aggression modifier 
+(lowering his current aggression value by 2). 
+This would cause his aggression to overflow to 255, 
+making him maximally aggressive! However, more recently Sid Meier 
+(the game’s author) clarified that this wasn’t actually the case.
+
+Careful !!!!
+In GCC, unsigned integer overflows are NOT warned about when compiling since
+they are not UNDEFINED BEHAVIOR but are instead very predictable !
+That means you have to keep an eye out for them, since GCC won't.
+
+Ezoic
+
+All of these problems are commonly encountered, produce unexpected 
+behavior, and are hard to find, even using automated tools designed
+to detect problem cases.
+
+Given the above, the somewhat controversial best practice that we’ll 
+advocate for is to avoid unsigned types except in specific circumstances.
+
+Favor signed numbers over unsigned numbers for holding quantities
+(even quantities that should be non-negative) and mathematical operations.
+Avoid mixing signed and unsigned integers.
+
+There are still a few cases in C++ where it's okay / necessary to use
+unsigned numbers.
+First: unsigned numbers are preferred when dealing with bit manipulation
+They are also useful when well-defined wrap-around behavior is required
+(useful in some algorithms like encryption and random number generation)
+
+Second, use of unsigned numbers is still unavoidable in some cases, mainly
+those having to do with array indexing.
+Also note that if you're developing for an embbed system (like an Arduino)
+or some other processor/memory limited context, use of unsigned numbers is 
+more common and accept (and in some cases, unavoidable) for performance
+reasons.
+
+Lesson 6
+--------
+
+In C++, int has a minimum size of 16-bits, but is typically 32-bits on
+modern architectures.
+
+Bottom line is, THIS SUCKS:
+You never know what the target system size for int will be.
+You might assume an int is only 16-bits to ensure your program will behave
+on all architectures, then the range of values you can safely store in an
+int is significantly limited, and on systems where int is actually 32-bits,
+you're not making use of half of the memory allocated per int.
+
+SO:
+	In most cases, we only instantiate a small number of int variables at a
+	time, and these are typically destroyed at the end of the function
+	in which they are create. In such cases, wasting 2 bytes of memory
+	per variable isn't a concern when you assume int is 16-bits instead of 
+	32-bits (the limited range is a bigger issue)
+	However, in cases where your program allocates millions of int
+	variables, wasting 2 bytes of memory per variable can have a significant
+	impact on the program's overall memory usage.
+
+Yes, it's a little ridiculous to have to deal with dunfamental types that
+have uncertain ranges. Especially in a language designed to be portable.
+
+To address the above issues, C++11 provides an alternate set of integer
+types that are guaranteed to be the same size on any architecture.
+Because the size of these integers is fixed, they are called fixed-width
+integers. Defined in the <cstdint> header
+
+Name			Fixed Size		Fixed Range				Notes
+std::int8_t		1 byte signed	-128 to 127				Treated like a signed char on many systems. See note below.
+std::uint8_t	1 byte unsigned	0 to 255				Treated like an unsigned char on many systems. See note below.
+std::int16_t	2 byte signed	-32,768 to 32,767
+std::uint16_t	2 byte unsigned	0 to 65,535
+std::int32_t	4 byte signed	-2,147,483,648 to 2,147,483,647
+std::uint32_t	4 byte unsigned	0 to 4,294,967,295
+std::int64_t	8 byte signed	-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807
+std::uint64_t	8 byte unsigned	0 to 18,446,744,073,709,551,615
+
+Best practice:
+	Use a fixed-width integer type when you need an integral type that
+	has a guaranteed range.
+
+Warning
+
+The 8-bit fixed-width integer types are often treated like 
+chars instead of integer values (and this may vary per system). 
+The 16-bit and wider integral types are not subject to this issue.
+
+Note:
+the fixed-width integers are not guaranteed to be defined on all 
+architectures. They only exist on systems where there are fundamental 
+integral types that match their widths and following a certain binary 
+representation. Your program will fail to compile on any such 
+architecture that does not support a fixed-width integer that your 
+program is using. However, given that modern architectures have 
+standardized around 8/16/32/64-bit variables, this is unlikely to be a 
+problem unless your program needs to be portable to some exotic 
+mainframe or embedded architectures.
+
+Best practice:
+	avoid the 'fast' and 'least' integral types
+
+Given the various pros and cons of every type, there is little to no
+consensus on integral best practices.
+
+Our stance is that it's better to be correct than fast and better to fail
+at compile time than runtime. Therefore, if you need an integral type with
+a guaranteed range, we recommend using the fixed-width type. If you later
+discover the need to support an esoteric platform for which a specific
+fixed-width integral type won't compile, then you can decide how to
+migrate your program (and thoroughly retest) at that point.
+
+BEST PRACTICES:
+---------------
+
+Prefer int when the size of the integer doesn't matter (like the number
+will always fit within the range of a 2-byte signed integer) For example
+if you're asking the user to enter their age, or counting from 1 to 10, it
+doesn't matter whether int is 16 or 32 bits.
+
+Prefer std::int#_t when storing a quantity that needs a guaranteed range.
+
+Prefer std::uint#_t when doing bit manipulation or well-defined wrap-around
+behavior is required (like cryptography or random number generation)
+
+Avoid the following when possible:
+
+short and long integers (prefer a fixed-width integer type instead)
+the fast and least integral types (prefer a fixed-width int)
+unsigned types for holding quantities (signed int instead)
+8-bit fixed-width integer types (prefer a 16-bit fixed-width int instead)
+Any compiler specific fixed-width integers
+
+SO:
+	sizeof(int) returns a value of type std::size_t that the compiler decides
+	which type of unsigned int to use for. It is used within standard library
+	to represent the byte-size or length of objects.
+
+Best practice:
+
+If you use std::size_t explicitly in your code,
+#include one of the headers that defines std::size_t (we recommend <cstddef>).
+Using sizeof does not require a header
+(even though it return a value whose type is std::size_t).
+
+Scientific notation:
+
+6,969e24 = 6,969E24 = 6.969 * (10^24)
+1e-5 = 0.00001
+
+Here’s the most important thing to understand about scientific 
+notation: The digits in the significand (the part before the ‘e’) 
+are called the significant digits (or significant figures). 
+
+Key insight
+The more digits in the significand, the more precise a number is.
+
+(significant)e(exponent)
+
+3.14e0 has 3 significant digits
+
+When converting to scientific notation, trailing zeros after a
+decimal are considered significant, so we keep them:
+    87.0g = 8.70e1
+    87.000g = 8.7000e1
+
+You may occasionally see a number written with a trailing decimal 
+point. This is an indication that the preceding zeros are significant.
+
+    2100. = 2.100e3 (trailing zeros known significant)
+
+
