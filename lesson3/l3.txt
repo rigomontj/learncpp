@@ -171,7 +171,7 @@ whatis variable
 watch variable
 (like display, but only shows when the value changes.)
 
-f
+where
 (list info about the current stack frame)
 
 focus next
