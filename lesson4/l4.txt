@@ -633,4 +633,141 @@ float c { 5.0f }; // 5.0 is a floating point literal, f suffix means
 int d { 0 };	  // 0 is an integer
 double e { 0.0 }; // 0.0 is a double
 
+Format				Range						Precision
+IEEE 754 single-precision (4 bytes)	
+±1.18 x 10-38 to ±3.4 x 1038 and 0.0	
+6-9 significant digits, typically 7
 
+IEEE 754 double-precision (8 bytes)	
+±2.23 x 10-308 to ±1.80 x 10308 and 0.0	
+15-18 significant digits, typically 16
+
+x87 extended-precision (80 bits)	
+±3.36 x 10-4932 to ±1.18 x 104932 and 0.0	
+18-21 significant digits
+
+IEEE 754 quadruple-precision (16 bytes)	
+±3.36 x 10-4932 to ±1.18 x 104932 and 0.0	
+33-36 significant digits
+
+SO:
+	A floating point type can only precisely represent a certain
+	number of significant digits. Using a value with more significant
+	digits than the minimum may result in the value being
+	stored inexactly.
+
+When outputting floating point numbers, std::cout has a default 
+precision of 6. That is, it assumes 
+all floating point variables are only
+significant to 6 digits (the minimum precision of a float), and hence
+it will truncate anything after that.
+
+Tip:
+
+Output manipulators and input manipulators are sticky.
+Meaning if you set them, they will remain set.
+The one exception is std::setw. Some IO operations reset std::setw,
+so it should be used every time it is needed.
+
+Precision issues don't just impact fractional numbers, they impact
+any number with too many significant digits.
+When this happens with big numbers, it is called a rounding error.
+
+Best practice:
+	Favor double over float unless space is at a premium,
+	as the lack of precision in a float will often lead to
+	inaccuracies.
+
+SO:
+	Rounding errors occur when a number can't be stored precisely,
+	This can happen even with simple numbers, like 0.1
+	Therefore, rounding errors can, and do, happen all the time.
+	Rounding errors aren't the exception - They're the norm.
+	Never assume your floating point numbers are exact.
+	So be wary of using floating point numbers for finacial or
+	currency data.
+
+NaN and Inf
+
+IEEE 754 compatible formats additionally support some special values:
+Inf, which represents infinity. Inf is signed and can be positive or
+negative.
+NaN stands for Not a Number.
+Signed zero, meaning there is +0.0 and -0.0
+
+Formats that are not compatible with IEEE 754 may not support some
+or any of these values, in such cases, code that uses or generates
+these special values will produce implementation defined behavior.
+
+Best practice:
+	Avoid division by 0.0, even if your compiler supports it.
+
+Remember:
+	Floating point numbers are useful for storing very large or very
+	small numbers, including those with fractional components.
+	Floating point numbers often have small rounding errors, even
+	when the number has fewer significant digits than the precision.
+	Many times these go unnoticed because they are so small, and
+	because the numbers are truncated for output. However,
+	comparisons of floating point numbers may not give the expected
+	results. Performing mathematical operations on these values will
+	cause the rounding errors to grow larger.
+
+Lesson 9
+--------
+
+Booleans invented by George Boole
+
+bool b1 { true };
+bool b2 { false };
+b1 = false;
+bool b3 {}; // default initialize to false (0)
+
+Just like the -operator can be used to make integers negative, the
+logical NOT operator can be used to flip a boolean value from true to
+false or from false to true.
+
+bool b1 { !true };
+bool b2 { !false };
+
+Booleans are not stored as true of false but as 0 and 1.
+Because booleans store integral values, they are considered to be an
+integral type.
+
+Booleans printed by cout are 0 for false and 1 for true.
+
+std::cout << std::boolalpha;
+// now prints bools as true or false;
+
+When using uniform initialization, you can init a variable using
+integer literals 0 for false and 1 for true but you should really be
+using false and true. Other integer literals cause compilation errors.
+
+However, in any context where an integer can be converted to a boolean,
+the integer 0 is converted to false, and any other integer is converted
+to true.
+
+If you use std::cin for booleans, note that it only accept 0 for false
+and 1 for true, any other numeric value will be interpreted as true
+and will cause std::cin to enter failure mode. Any non-numeric value
+will be interpreted as false and will cause std::cin to enter failure
+mode.
+
+More on failure mode in lesson 9
+
+Note that we use std::cin >> std::boolalpha; to input bool values as 
+true or false, and std::cout << std::boolalpha; to output bool values 
+as true or false. These are independent controls that can be turned on 
+(using std::boolalpha) or off (using std::noboolalpha) separately.
+
+Boolean return values are often used for functions that check whether
+something is true or not. Typically name isWhatever() or hasSomething()
+ex: isValid(), hasCommonDivisor()
+
+if, else, else if.
+if there's no brackets, it only takes the first next statement,
+
+You can also check the condition for something that ISN'T a boolean.
+In that case, the expression gets converted to a boolean value:
+non-zero values get converted to boolean true (1) and zero-values get
+converted to boolean false.
