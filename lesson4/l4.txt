@@ -609,7 +609,7 @@ types.
 
 floating point				float				4 bytes
 							double				8 bytes
-							long double			8, 12 or 26 bytes
+							long double			8, 12 or 16 bytes
 
 On my machine, long double is 16 bytes
 
@@ -635,19 +635,19 @@ double e { 0.0 }; // 0.0 is a double
 
 Format				Range						Precision
 IEEE 754 single-precision (4 bytes)	
-±1.18 x 10-38 to ±3.4 x 1038 and 0.0	
+±1.18 x 10^-38 to ±3.4 x 10^38 and 0.0	
 6-9 significant digits, typically 7
 
 IEEE 754 double-precision (8 bytes)	
-±2.23 x 10-308 to ±1.80 x 10308 and 0.0	
+±2.23 x 10^-308 to ±1.80 x 10^308 and 0.0	
 15-18 significant digits, typically 16
 
 x87 extended-precision (80 bits)	
-±3.36 x 10-4932 to ±1.18 x 104932 and 0.0	
+±3.36 x 10^-4932 to ±1.18 x 10^4932 and 0.0	
 18-21 significant digits
 
 IEEE 754 quadruple-precision (16 bytes)	
-±3.36 x 10-4932 to ±1.18 x 104932 and 0.0	
+±3.36 x 10^-4932 to ±1.18 x 10^4932 and 0.0	
 33-36 significant digits
 
 SO:
@@ -771,3 +771,149 @@ You can also check the condition for something that ISN'T a boolean.
 In that case, the expression gets converted to a boolean value:
 non-zero values get converted to boolean true (1) and zero-values get
 converted to boolean false.
+
+Lesson 11
+---------
+Chars
+
+From now, we've seen integers and floating points for numbers and Booleans
+for true/false. But what if we want to store letters or punctuation
+
+The char data type is an integral type, meaning the underlying value is
+stored as an integer. Similar to how a boolean value 0 is interpreted as
+false and non-zero is interpreted as true, the integer stored by a char
+variable are interpreted as an ASCII character.
+
+ASCII stands for American Standard Code for Information Exchange.
+It defines a particular way to represent English characters and a few other
+symbols as numbers between 0 and 127 (called an ASCII code or code point)
+For example, ASCII code 97 is interpreted as the character a.
+
+https://www.ascii-code.com/
+
+Codes 0-31 and 127 are called the unpritable chars. These codes were
+designed to control the peripheral devices such as printers (ex: by
+instructing the printer how to move the print head). Most of these 
+are obsolete now. If you try to print these chars, the results depend
+on your OS.
+
+Codes 32-126 are called the printable characters, and they represent the
+letters, number characters, and punctuation that most computers use to
+display basic english text.
+
+If you try to print a character whose value is outside the range of ASCII,
+the results also depend on your OS.
+
+char c { 0 }; // 0th ASCII character represented as null
+is different than
+char c { '0' }; // 48th ASCII character represented as 0
+
+Char is defined by C++ to always be 1 byte in size. By default,
+a char may be signed or unsigned (though it's usually signed).
+If you're using chars to hold ASCII characters, you don't need to specify
+a sign.(since both signed and unsigned char can hold values between
+0 and 127).
+
+If you're using a char to hold small integers (something you should not do
+unless you're explicitly optimizing for space as chars are 1 byte and 
+integers are minimum 2 bytes) you should always specify wheter it is
+signed or unsigned. A signed char can hold -128;127 and unsigned can hold
+0;255
+
+There are some sequences of characters in C++ that have special meaning,
+these characters are called escape sequences, in starts with a \ backslash
+character and then a following letter or number.
+
+We already know about \n , but there's a lot more
+\t embeds a horizontal tab
+\' prints a single quote
+\" prints a double quote
+\\ prints a backslash
+
+Alert	\a	Makes an alert, such as a beep
+Backspace	\b	Moves the cursor back one space
+Formfeed	\f	Moves the cursor to next logical page
+Newline	\n	Moves cursor to next line
+Carriage return	\r	Moves cursor to beginning of line
+Horizontal tab	\t	Prints a horizontal tab
+Vertical tab	\v	Prints a vertical tab
+Single quote	\’	Prints a single quote
+Double quote	\”	Prints a double quote
+Backslash	\\	Prints a backslash.
+Question mark	\?	Prints a question mark.
+No longer relevant. You can use question marks unescaped.
+Octal number	\(number)	Translates into char represented by octal
+Hex number	\x(number)	Translates into char represented by hex number
+
+Best practice:
+	For everything except output, single characters should be single-quoted
+	not double quoted.
+
+Avoid multicharacter literals like '56';
+
+Much like ascii maps the integers 0-127 to american english characters,
+other character encoding standards exist to map integers of varying sizes
+to characters in other languages. The most well know mapping outside of
+ASCII is the unicode standard, which maps over 144.000 integers to 
+characters in many different languages. Because unicode contains to many
+code points, a single Unicode code point needs 32-bits (4 bytes) to 
+represent a characters (called UTF-32), However, Unicode characters can
+also be encoded using multiple 16 or 8 bit characters, called UTF-16 and
+UTF-8.
+
+char16_t and char32_t were added to C++11 to provide explicit support for
+16-bit and 32-bit Unicode characters.
+These char types have the same size as std::uint_least16_t and
+std::uint_least32_t respectively but are distinct types.
+
+char8_t was added in C++20 to provide support for 8-bit Unicode UTF-8
+It is a distinct type that uses the same representation as unsigned char.
+
+You need these types to make your program unicode compatible.
+
+Lesson 12
+---------
+
+Type conversion and static_cast/
+
+SO:
+	Type conversion uses direct initialization int a ( 6 ); to produce a 
+	new value of the target type from a volue of a different type.
+
+	Some type conversions are always safe to make (like int->double)
+	whereas others may result in the value being changed during conversion
+	(such as double->int) Unsafe implicit conversions will typically
+	either generate a compiler warning or in the case of brace init,
+	an error.
+	This is one of the primary reason brace init is the better init form.
+
+Explicit type conversion via the static_cast operator
+
+static_cast<new_type>(expression)
+
+static_cast takes the value from an expression as input, and returns that
+value converted into the type specified by new_type.
+
+static_cast<int>(5.0) // would return the conversion of double float value
+					  // 5.0 into the value 5 of type int
+
+SO:
+	Whenever you see C++ styntax (excluding the preprocessor) that makes
+	use of angled brackets <> the thing between them will most likely
+	be a type. This is typically how C++ deals with code that need a
+	parameterized type.
+
+Note that casting does not affect what is in the (), it evaluates as an
+expression and returns a value, that's it.
+
+int i { -50 };
+unsigned int u { static_cast<unsigned int>(i) };
+// -50 modulo wrapped
+
+unsigned int u { -50 };
+int i { static_cast<int>(u) };
+// -50 modulo wrapped since C++20, implementation defined before C++20
+
+Converting an unsigned integral value to a signed integral value will
+result in implementation defined behavior prior to C++20 if the value
+being converted can not be represented in the signed type.
