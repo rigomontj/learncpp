@@ -1,0 +1,688 @@
+Lesson 1
+--------
+
+Constant variables (named constants)
+
+In programming, a constant is a value that may not be changed during the
+program's execution.
+
+Named constants are constant values that are associated with an identifier,
+These are also sometimes called symbolic constants.
+
+Literal constants are constant values that are not associated with an
+identifier.
+
+Let's start with named constants.
+
+There are three types of them,
+one of which we'll cover now, and the rest later.
+
+- constant variables
+- Object-like macros with substitution text
+- Enumerated constants
+
+So far, all of the variables we've seen have been nonn-constant == that is,
+their values can be changed at any time (typically by assigning a new value)
+
+int main()
+{
+	int x { 4 }; // x i s a non-constant variable
+	x = 5;		 // change value of x to 5 using assignment operator
+	return 0;
+}
+
+However, there are many cases where it is useful to define variables with
+values that can not be changed. For example, consider the gravity of Earth
+near the surface, 9.8 meters/second^2. This isn't likely to change any
+time soon, and if it does, you've likely got bigger problems than learning
+C++. Defining this value as a constant helps ensure that this value isn't
+accidentally changed. Constants also have other benefits that we'll
+explore in subsequent lessons.
+
+Although it is a well know oxymoron, a variable whose value cannot be
+changed after initialization is called a constant variable.
+
+To declare a constant variable, we place the const keyword called a 
+const qualifier adjacent to the object's type.
+
+const double gravity { 9.8 }; // preferred use of const before type
+int const sidesInSquare { 4 }; // "east const" style, okay but not pref
+
+Although C++ will accept the const qualifier either before or after the
+type, it's much more common to use const before the type because it
+follows standard english language convention where modifiers come
+befoer the object being modified (a green ball not a ball green).
+
+As an aside, due to the way the compiler parses more complex declarations
+some developers prefer placing the const after the type because it is 
+slightly more consistent. This is called east const. This has some
+advocates and reasonable points but has not caught on significantly.
+
+Best practice:
+Place const before the type (because it is more conventional to do so)
+
+SO:
+	The type of an object includes the const qualifier, so when we define
+	const double gravity { 9.8 }; the type of gravity is const double.
+
+Const variables must be initialized when you define them, and then that
+value can not be changed via assignment.
+
+const double gravity; // error const variables must be initialized
+double gravity = 9.9; // error const variables can not be changed
+const int constAge { age }; // OK init const var using non const value
+
+SO:
+	The initializer of a const variable can be a non-constant value.
+
+Naming conventions
+
+Programmers transitioned from C : EARTH_GRAVITY
+More common in C++ :			  kEarthGravity
+Const is just a normal variable : earthGravity // use this one
+
+Const function parameters
+
+void printInt(const int x)
+{
+	std::cout << x << "\n";
+}
+
+Note: This is pretty much useless since we don't care what happens to x
+as it is a copy of a variable.
+
+Best practice:
+	Don't use const for value parameters.
+
+There's cases we'll discuss later where const parameters are important.
+
+Const return values
+
+const int getValue()
+{
+	return 5;
+}
+
+For fundamental types, the const qualifier on a return type is simply 
+ignored (your compiler may generate a warning.
+
+For other types, there is typically little point in returning const
+objects by value, because they are temporary copies that will be
+destroyed anyway.
+Returning a const value can also impede certain kinds of compiler
+optimizations which can result in lower performance.
+
+Best practice:
+	Don't use const when returning by value.
+
+Why variables should be made constant
+
+If a variable can be made constant it generally should be made constant
+
+It reduces the chance of bugs by making a variable constant you ensure
+that the value can't be changed accidentally.
+
+It provides more opportunity for the compiler to optimize programs.
+When the compiler can assume a value isn't changing it is able to leverage
+more techniques to optimize the program, resulting in a compiler program
+that is smaller and faster. we'll discuss this further later in this chapt.
+
+Most importantly, it reduces the overall complexity of our programs.
+When trying to determine what section of code is doing or trying to 
+debug an issue, we know that a const variable can't have its value changed
+so we don't have to worry about whether its value is actually changing
+what value it is changing to and whether that new value is correct
+
+SO:
+	Every moving part of in a system increases complexity and the risk of
+	defect or failure, Non constant variables are moving parts while
+	constant variables are not.
+
+Best practice:
+	Makes variables constant whenever possible. Exception cases include
+	by value function parameters and by value return types, which should
+	generally not be made constant.
+
+#define EARTH_GRAVITY 9.8
+is also a constant because the substitution text is a constant.
+
+Prefer constant variables to preprocessor macros
+Since preprocessor directives do not follow C++ scope rules,
+if you #define in a function, it will not become undefined when out of
+scope. It could cause weird errors.
+It's often harder to debug code using macros. Although your source code
+will have the macro's value and often have limited capabilities when
+working with macros.
+Macro subtitution behaves differently than everything else in C++.
+Inadvertent mistakes can be easily made as a result.
+
+Constant variables have none of these problems: They follow normal scoping
+rules, can be seen by the compiler and debugger and behave consistently.
+
+Best practice:
+	Prefer constant variables over object-like macros with substitution
+	text.
+
+Using constant variables throughout a multi-file program
+
+In many applications, a given named constant needs to be used throughout
+your code not just in one file. These can include physics or mathematical
+constants that don't change (like pi) or application specific tuning values
+(friction or gravity coefficients). Instead of redefining these every time
+they are needed, it's better to declare them once in a central location and
+use them whenver needed. That way if you ever need to change them,
+you only need to change them in one place.
+
+There are multiple ways to facilitate this within c++ we'll see later.
+
+Nomenclature:
+Type qualifiers or qualifier for short is a keyword that is applied to a 
+type that modifies how that type behaves.
+The const used to declare a constant variable is called a const type 
+qualifier.
+
+As of C++23, C++ only has two type qualifiers: const and volatile.
+
+Lesson 2
+--------
+
+return 5;						// 5 is an integer literal.
+bool myNameIsJules				// true is a boolean literal
+double d { 3.4 };				// 3.4 is a double literal
+std::cout << "Hello world!";	// "Hello world!" is Cstyle string literal
+
+Literals are sometimes called literal constants, because their meaning
+cannot be redefined. (5 always means the integral value 5.
+
+All literals have a type. It is deduced from the literal's value.
+
+5 is deduced to be of type int etc....
+
+integer value				5, 0, -3		int
+boolean value				true, false		bool
+floating point value		1.2, 0.0, 3.4	double (not float!)
+character					'a', '\n'		char
+C-style string				"Hello world!"	const char[14]
+
+Literal suffixes
+
+If the default type of a literal is not as desired, you can change the type
+of a literal by adding a suffix. Here are some of the more common ones:
+
+integral		u or U									unsigned int
+integral		l or L									long
+integral		ul, uL, Ul, UL, lu, lU, Lu, LU			unsigned long
+integral		ll or LL								long long
+integral		ull, uLL, Ull, ULL, llu, llU, LLu, LLU	unsigned long 
+integral		z or Z									signed std::size_t
+integral		uz, uZ, Uz, UZ, zu, zU, Zu, ZU			std::size_t
+floating point	f or F									float
+floating point	l or L									long double
+string			s										std::string
+string			sv										std::string_view
+
+In most cases, suffixes aren't needed except for f.
+
+Most of the suffixes are not case sensitive except for s and sv
+that must be lowercase.
+Two consecutive l or L characters must have the same casing.
+Because lowercase l looks like numeric 1, some developers prefer to use
+uppercase literals, others use lowercase suffixes except for L.
+
+Best practice:
+	Prefer literal suffix L upper case over l lower case
+
+Integral literals won't be needed generally, but can be used.
+
+By default, floating point literals have a type of double, to make them
+float literals instead, the f or F suffix should be used.
+
+float f { 5.0 }; 	// warning: 5.0 is a double literal
+float f { 5.0f };	// no warnings
+
+You can also write doubles and floats with scientific notation
+
+double pi { 3.14159 };
+double avogadro { 6.02e23 };
+double protonCharge { 1.6e-19 };
+
+String literals
+
+"Hello world! is a string literal
+placed between " instead of ' for char
+
+Strings are not fundamental types in C++, but they have a weird type
+used in C++ we'll see later that is often called C-style string or
+C string.
+
+There are two non obvious things worth knowing about C style string 
+literals:
+
+All C style string literals have an implicit null terminator. Consider
+a string such as "hello". While this C style string appears to only
+have five characters, it actually has six
+h e l l o \0
+\0 is a character with ASCII code 0
+it is called a null terminator, and it is used to indicate the end
+of the string. A string that ends with a null terminator is called
+a null-terminated string.
+
+Unlike most other literals which are values, not objects, C style string
+literals are const objects that are created at the start of the program
+and are guaranteed to exist for the entirety of the program. This fact
+will become important in a few lessons, when we discuss std::string_view
+
+SO:
+	C style string literals are const objects that are created at the
+	start of the program and are guaranteed to exist for the entirety
+	of the program.
+
+Unlike C style string literals, std::string and std::string_view
+literals create temporary objects. These temporary objects must be used
+immediatly as they are destroyed at the end of the full expression in
+which they are created.
+
+A magic number is a literal usually a number that either has an unclear
+meaning or may need to be changed later.
+
+const int maxStudentsPerSchool { numClassrooms * 30 };
+setMax(30);
+
+in the first, we can guess that 30 is the number of students in a class,
+in the second, who knows?
+
+In complex programs, magic numbers is considered bad practice because
+in addition to not providing context as to what they are being used for
+they pose problems if the value needs to change. Let's assume that the
+school buys new desks that allow them to raise the class size from 30 to
+50 and our program needs to reflect that.
+
+To do so we need to update one or more literal from 30 to 50. But which
+literal? do both 30 have the same meaning?
+
+Fortunately, both the lack of context and the issues around updating
+can be easily addressed by using symbolic constants.
+
+const int maxStudentsPerClass { 30 };
+const int totalStudents { numClassrooms * maxStudentsPerClass };
+
+const int maxNameLength { 30 };
+setMax(maxNameLegnth);
+
+Now it makes sense !!!
+magic numbers don't have to be just numbers, they can be text or other
+types.
+
+Literals usd in obvious contexts that are unlikely to change are
+typically not considered magic.
+
+int idGenerator { 0 };
+idGenerator++;
+
+int kmToM(int km)
+{
+	return km * 1000;
+}
+
+Best practice:
+	Avoid magic numbers in your code (use constexpr variables instead)
+
+Lesson 3
+--------
+
+In everyday life, we count using decimal numbers where each numerical 
+digit can be 0 1 2 3 4 5 6 7 8 9
+
+Decimal is also called base 10 because there are 10 possible digits
+
+in binary, only two digits, 0 and 1.
+
+0, 1, 10, 11, 100, 101, 110, 111, 1000, 1001, 1010, 1011, 1100, 1101,
+1110, 1111...
+
+4 main numeral systems available in C++, in order of popularity:
+decimal (base 10)
+binary (base 2)
+hexadecimal (base 16)
+octal (base 8)
+
+10 in decimal is 1010 in binary
+10 in binary  is 2    in decimal
+
+octal counts from 0 to 7
+0 1 2 3 4 5 6 7 10 11 12 13 14 15 16 17 20...
+
+int x { 012 }; // 0 before the number means this is octal.
+
+12 in octal is 10 in decimal
+12 in decimal is 14 in octal
+
+Octal is rarely used.
+
+Hexadecimal is base 16.
+
+0 1 2 3 4 5 6 7 8 9 A B C D E F 10 11 12 13 14 15 16 17 18 19 1A 1B 1C...
+
+int x { 0xF }; // 0x before the number means this is hexadecimal.
+
+F in hexadecimal is 16 in decimal
+F ASCII code to hexadecimal is 46
+f ASCII code to hexadecimal is 66
+
+Since there are 16 different values for a hexadecimal digit, we can
+say that a single hexadecimal digit encompasses 4 bits, this means that
+a single hexadecimal digit can represent the same number of values than
+4 binary digits. 2^4 = 16
+16^1 = 16
+
+Consequently, a pair of hexadecimal digits can be used to exactly
+represent a full byte (8 binary digits/bits 2^8 = 256 different values)
+because 16^2 is 256
+
+Since hexadecimal is much more concise than binary, it is often used to
+represent memory addresses or raw data in memory (whose type isn't known)
+
+Before C++14 there is no support for binary literals. However,
+hexadecimal literals provide us with a useful workaround
+
+Before C++14:
+int bin {};
+bin = 0x00FF // bin is assigned 0000 0000 1111 1111
+
+C++14 and onward:
+
+int bin{};
+bin = 0b0000000011111111; // bin is assigned 0000 0000 1111 1111 or 00FF
+bin = 0b11111111;		  // the same, starting 0s are omitted.
+
+You can also use ' as digit separators to make it easier to read
+
+bin = 0b0000'0000'1111'1111; // assigned 0000 0000 1111 1111 or 00FF
+bin = 0b1111'1111;		  	 // the same, starting 0s are omitted.
+
+std::cout << std::hex // now outputs values in hexadecimal
+std::cout << std::dec // now outputs values in decimal
+std::cout << std::oct // now outputs values in octal
+
+for binary
+#include <bitset>
+
+// means we want to store 8 bits
+std::bitset<8> bin1 { 0b1100'0101 }; // assign 1100 0101
+std::bitset<8> bin1 { 0xC5 }; 		 // assign 1100 0101
+std::bitset<8> bin1 { 0305 }; 		 // assign 1100 0101
+
+see octal.cpp
+
+In C++20 and C++23, we have better options for printing binary
+
+// C++20, formats the arguments as binary digits
+std::cout << std::format("{:b}\n", 0b1010);
+// C++20, formats the arguments as 0b-prefixed binary digits
+std::cout << std::format("{:#b}\n", 0b1010);
+// C++23, print two arguments
+std::cout << std::format("{:#b} {:b}", 0b1010, 0b0101);
+
+Lesson 4
+--------
+
+Introduction to optimization
+
+In programming, optimization is the process of modifying software to make
+it work more efficiently (faster, or use fewer resources)
+
+Some types of optimization are typically done by hand. A program called
+a profiler can be used to see how long various parts of the program
+are taking to run, and which are impacting overall performance.
+
+The programmer can then look for ways to alleviate those performance
+issues. Because hand optimization is slow, programmers typically focus
+on making high level improvements that will have a large impact.
+
+Other kinds can be performed automatically. A program that optimizes
+another program is called an optimizer, which usually work at a low level
+looking for ways to improve statements or expressions by rewriting
+reodering or eliminating them.
+for example i = i * 2; can turn into i *= 2; i += i; or i <<= 1;
+For integral values, all of these produce the same result, but one might
+be faster than the others on a given architecture.
+A programmer would probably not know which is the most performant choice,
+and the answer might vary based on architecture, but an optimizer for a
+given system would. Individual low level optimizations may only yield
+small performance gains, but their cumulative effect can result in a 
+significant performance improvement overall.
+
+Modern C++ compilers are optimizing compilers, meaning they are capable
+of automatically optimizing your programs as part of the compilation
+process. Just like the preprocessor, these optimizations do not modify
+your source code files -- rather, they are applied transparently as part
+of the compilation process.
+
+SO:
+	Optimizing compilers allow programmers to focus on writing code that
+	is readable and maintainable without sacrificing performance.
+
+Because optimization involves tradeoffs, compilers typically support
+multiple optimization levels that determine whether they optimize,
+how aggressively, and what kind of optimizations they prioritize
+(speed or size)
+
+gppr is my alias for release compiling (including optimizations)
+
+The As-If rule:
+In C++, the compiler is given a lot of leeway to optimize.
+The as-if rule says that the compiler can modify a program however it
+likes in order to produce more optimized code, so long as those
+modifications do not affect a program's observable behavior.
+
+int seven { 3 + 4 };
+// could be optimized
+// because 3 + 4 evaluates at runtime
+int seven { 7 };
+
+SO:
+	Compile time evaluation allows the compiler to do work at compile
+	time that would otherwise be done at runtime. Because such
+	expressions no longer need to be evaluated at runtime, the
+	resulting executables are faster and smaller (at the cost of
+	slightly slower compilation times).
+
+Here are a few compilation time evaluation optimizations
+
+Constant folding:
+3 + 4 becomes 7
+
+Constant propagation:
+int x { 7 };
+std::cout << x;
+// becomes
+int x { 7 };
+std::cout << 7;
+
+int x { 7 };
+int y { 3 };
+std::cout << x + y;
+// becomes
+int x { 7 };
+int y { 3 };
+std::cout << 10;
+
+Dead code elimination:
+int x { 7 };
+std::cout << 7;
+// becomes
+std::cout << 7;
+// When a variable is removed because no longer needed,
+// we say it was optimized out or optimized away.
+
+Const variables are easier to optimize:
+const int x { 7 };
+// easier for compiler to realize value doesn't change
+
+Careful! Optimizations make debugging challenging.
+That's why debug builds will typically leave optimizations turned off.
+
+Nomenclature:
+
+Compile time constants is a constant whose value is known at compile
+time, like literals and constant objects whose initializers are
+compile time constants.
+Runtime constants are constants whose value is determined in runtime
+context, like constants function parameters or constant objects whose
+initializers are non-constants or runtime constants.
+
+int a { 5 }; // non-constant
+const int b { 7 }; // compile-time constant
+const int c { a }; // runtime-constant because a is non-constant
+
+This nomenclature is useless
+
+Lesson 5
+--------
+
+Constant expressions
+
+By default, expressions evaluate at runtime, and sometimes they have to.
+
+std::cin and std::cout can't be performed at compile time, the
+expressions are required to evaluate at runtime.
+
+const double x { 1.2 };
+const double y { 3.4 };
+const double z { x + y }; // x + y may evaluate at runtime/compile time
+
+depends on the optimizations done by your compiler.
+
+In a few other cases, the C++ language requires an expression that can 
+be evaluated at compile-time. For example constexpr variables
+require an initializer that can be evaluated at compile-time.
+
+int main()
+{
+	constexpr int x { expr }; // Because variable x is constexpr
+							  // expr must be evaluated at compile time
+	return 0;
+}
+
+If a constant expression is required but one is not provided, the
+compiler will error and halt compilation.
+
+The benefits of compile time programming.
+While the as-if rule is great for improving performance, it leaves us
+reliant on the sophistication of the compiler to actually determine
+what can evaluate at compile-time.
+This means if there is a section of code we really want to execute at 
+compile time it may or may not.
+
+To improve upon this situation, we can use compile time programming.
+
+Better performance, Versatility, Predictability, Safety...
+
+More performant and of higher quality, more secure and less buggy.
+
+most important C++ features for compile time programming:
+constexpr variables
+constexpr functions
+templates
+static_assert
+
+All of those use constant expressions.
+
+an expression is a non empty sequence of literals variables operators
+and function calls.
+a constant expression is a non empty sequence of literals, 
+constant variables, operators and function calls, all of which must be
+evaluatable at compile time.
+The key difference is that in a constant expression each part of it must
+be evaluatable at compile time.
+
+SO:
+	For a constant expression, each part of 
+	it must	be evaluatable at compile time.
+
+a non-constant expression can also be called a runtime expression
+
+The following cannot be used in a constant expression:
+
+Non const variables, const non-integral variables (use const variables 
+instead), operators with operands that are not constant expressions
+(ex: std::cout << "hey"; since << has std::cout operand of non const
+type), functions calls to non constexpr functions (even if return val is
+constant expression), Function parameters (even when function is
+constexpr), operators new delete throw typeid and operator, (comma)
+
+An expression containing any of the above is a runtime expression.
+
+Nomenclature:
+X is usable in a constant expression
+is often used when emphasizing what X is like 5 is usable in a constant
+expression.
+Z is a constant expression is sometimes used when emphasizing that the
+full expression is a constant expression. like 5 is a constant expression
+
+Since the compiler is free to act however it wants in the case of a
+const expr that can be evaluated at runtime OR compile time, it is only
+required to evaluate at compile time constant expressions in contexts
+that require a constant expression.
+
+An expression that must be evaluated at compile-time is called a 
+manifestly constant-evaluated expression.
+
+const int x { 5 + 3 }; // must be evaluated at compile time
+int x { 5 + 3 };	   // compile time OR runtime
+
+Usually, modern compilers will evaluate at compile time what it can
+if optimizations are enabled.
+
+SO:
+	The compiler is only required to evaluate constant expressions
+	at compile-time in contexts that require a constant expression.
+	It may or may not do so in other cases.
+
+Lesson 6
+--------
+
+Constexpr variables
+
+To make sure we have a compile time evaluatable constant variable
+we use the constexpr keyword, which will generate an error if it
+contains non const expression components.
+
+ex:
+constexpr double x { 69 + 1 };
+
+const means that the value of an object cannot be changed after
+initialization, the value of the initializer may be known at compile
+time or runtime. the const object can be evaluated at runtime.
+
+constexpr means that the object can be used in a constant expression
+The value of its initializer must be known at compile time.
+The constexpr object can be evaluated at runtime or compile time.
+
+note that constexpr is not part of the type of variable,
+constexpr int x is of const type.
+
+Best practice:
+	Any constant variable whose initializer is a constant expression
+	should be declared as constexpr.
+
+	Any constant variable whose initializer is not a constant expression
+	(making it a runtime constant) should be declared as const
+
+	more: in the future, we'll see some types not compatible
+	with constexpr, for those, either use const or pick a different type
+	that is constexpr compatible
+
+Since functions are evaluated at runtime, const function parameters
+are treated as runtime constants even if arguments are compile time
+constant, and function parameters cannot be declared as constexpr,
+since their init value isn't determined until runtime
+
+Compile time constant: a value or non modifiable object whose value must 
+be know at compile time. (ex: literals and constexpr variables)
+constexpr: keyword that declares variables as compile time constants
+constant expression: an expression that contains only compile time
+constants and operators/functions that support compile-time evaluation.
+runtime expression: an expression that is not a constant expression
+runtime constant: a value or non modifiable object that is not a compile
+time constant.
