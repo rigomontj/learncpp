@@ -686,3 +686,130 @@ constants and operators/functions that support compile-time evaluation.
 runtime expression: an expression that is not a constant expression
 runtime constant: a value or non modifiable object that is not a compile
 time constant.
+
+Lesson 7
+--------
+
+std::cout << "Hey";
+// "Hey" is a C-style string literal.
+
+C-style string variables are dangerous in C++,
+We now use std::string and std::stringview (C++17)
+
+Those are not fundamental types, they are class types.
+
+std::string
+
+#include <string>
+std::string str {};
+std::string name { "Alex" };
+name = { "Jules" };
+std::string myID { "45" };
+std::cout << name << "\n";
+
+One of the best things with std::string is that it can store 
+strings of different lengths.
+
+SO:
+	If std::string doesn't have enough memory to store a string,
+	it will request additional memory at runtime using a form of memory
+	allocation known as dynamic memory allocation, This ability to acquire
+	additional memory is part of what makes std::string so flexible,
+	but also comparatively slow.
+
+Using std::string with std::cin may wield some surprises.
+
+Instead of std::cin, use std::getline() with std::string
+
+Best practice:
+	If using std::getline() to read strings, use std::cin >> std::ws
+	input manipulator to ignore leading whitespace.
+	Do it for each std::getline() call.
+
+SO:
+	When extracting to a variable, the extraction operator >> ignores
+	leading whitespace, It stops extracting when it encouters non-leading
+	whitespace.
+	std::getline() does not ignore leading whitespace, if you want it to
+	do, pass std::cin >> std::ws as the first argument. It stops extracting
+	when encountering a newline character.
+
+std::getline(std::cin >> std::ws, name);
+
+The length of std::string
+
+name.length();
+
+.length() is a member function, sometimes written as std::string::length()
+
+SO:
+	With normal functions, we call function(object)
+	With member functions, we call object.function()
+
+Note: std::string::length() returns an unsigned integral value, most likely
+of type size_t. If you want to assign the length to an int variable, you
+should static_casat it to avoid compiler warnings about signed unsigned
+conversions.
+
+int length { static_cast<int>(name.length()) };
+
+In C++20 you can also use the std::ssize() function to get the length
+of a std::string as a large signed integral type (usually std::ptrdiff_t).
+
+Initializing std::string, makes a copy of the string, 
+doing so is expensive so you should minimize the number of copies made.
+
+When a std::string is passed to a function by value, the std::string
+function parameters must be instantiated and initialized with the argument.
+This results in an expensive copy. we'll discuss what to do instead
+(use std::string_view) in lesson 5.8
+
+Best practice:
+	Do not pass std::strin by value, as it makes an expensive copy.
+
+Tip:
+	In most cases, use a std::string_view parameter instead.
+
+You'd guess that returning a std::string by value in a function would
+make a copy and be expensive, however, as a rule of thumb, it's OK to do so
+in the cases where the expression of the return statement resolves to:
+a local variable of type std::string
+a std::string that has been returned by value from another function call or
+operator
+a std::string temporary that is created as part of the return statement.
+
+In most other cases, prefer to avoid returning a std::string by value
+as doing so will result in an expensive copy.
+
+Tip:
+	If returning a C-style string literal, use a std::string_view return
+	type instead.
+
+Double quoted string literals like "Hello" are C-style strings by default
+We can create string literals with type std::string by using a s suffix
+after the double quoted string literal. The s must be lowercase.
+
+You probably won't need to use std::string literals very often,
+since it's fine to initialize a std::string object with a C-style string
+literal, but we'll see soon how it can be useful.
+
+constexpr std::string isn't supported at all in C++17 or eralier and only
+works in rare case in 20 or 23. If you need constexpr strings, use
+std::stringview instead.
+
+Conclusion:
+std::string is complex, leveraging many language features that we haven't 
+covered yet. Experiment, but it's normal not understanding it fully.
+
+Lesson 8
+--------
+
+C++17 std::string_view
+#include <string_view>
+
+string_view provides read-only access to an existing string (c-style,
+std::string or another std::string_view) without making a copy
+
+Best practice:
+	Prefer std::string_view over std::string when you need a read-only
+	string, especially for function parameters.
