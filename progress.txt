@@ -1,6 +1,6 @@
 total lessons: 351
 total chapters: 35
-lessons completed: 75
+lessons completed: 79
 chapters completed: 4
 
 02/12/2024
@@ -31,3 +31,5 @@ chapters completed: 4
 	Lesson 5.7-5.8 =2
 15/12/2024
 	Lesson 5.9-5.x =2
+16/12/2024
+	Lesson 6.1-6.3 =3

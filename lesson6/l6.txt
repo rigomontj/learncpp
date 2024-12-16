@@ -1,0 +1,143 @@
+Lesson 1
+--------
+
+An operation is a mathematical process involving zero or more input 
+values called operands. It produces a new value called an output value.
+The specific operation to be performed is denoted by a construct 
+(typically a symbol or pair of symbols) called an operator.
+
+Operator precedence
+
+Operators with a higher precedence level are grouped with operands first.
+(level 5 is higher than level 6)
+
+Operator associativity
+
+If two operators with the same precedence level are adjacent to each
+other in an expression, the operator's associativity tells the compiler
+whether to evaluate the operators (not the operands!) from left to
+right or from right to left. Subtraction has precedence level 6 and the
+operators in precedence levle 6 have an associativity of left to right.
+so 7 - 4 - 1 is grouped from left to right (7 - 4) - 1.
+
+Table:
+https://www.learncpp.com/cpp-tutorial/operator-precedence-and-associativity/
+
+note that C++ does not include a x^y operator to do exponentiation.
+More on lesson 6.3
+
+<< and >> can handle insertion/extraction AS WELL AS bitwise left/right
+shift. The compiler can determine which operation based on the types of
+operands.
+
+Best practice:
+	Use parentheses to make it clear how non-trivial compound expression
+	should evaluate based on precedence rules, even if they are 
+	technically unnecessary.
+
+So, parenthesize everything except add sub mult and div
+
+In C++, value computation means the execution of operators in an expression
+to produce a value.
+
+In C++, evaluation refers to the evaluation of operands (not the evaluation
+of operators or expressions)
+but informally, we use it to mean evaluation of an entire expression.
+
+However, precedence and associativity only tell us how operators and
+operands are grouped and the order in which value computation will occur.
+They do not tell us the order in which the operands or subexpressions
+are evaluated. The compiler is free to evaluate operands in any order.
+
+printCalculation(getValue(), getValue(), getValue()); // this line is ambiguous
+
+So we don't know if getValue calls are done from left to right or 
+right to left, it depends on your compiler.
+GCC right to left, clang left to right
+
+SO:
+	Operands, function arguments, and subexpressions may be evaluated
+	in any order.
+	It is a common mistake to believe that operator precedence and
+	associativity affects order of evaluation. Precedence and associativity
+	is used only to determine how operands are grouped with operators, and
+	the order of value computation.
+
+WARNING:
+	Ensure that the expression or function calls you write are not
+	dependent on operand or argument evaluation order.
+
+Lesson 2
+--------
+
+Arithmetic operators
+
+Unary:
+
++x and -y
+precedence level 3, R->L
+
+Do not confuse x + y (binary operator or x - y (binary operator)
+and -x or +y (unary operator)
+
+Binary:
+
+x + y
+x - y
+x * y
+x / y
+x % y (called remainder)
+
+You can think of / operator as having a floating point division mode
+and an integer division mode.
+floating point if one or both operands are floating point values, otherwise
+if both are integers, integer division 
+
+So if you want to divide two integers BUT keep the floating point result,
+you have to SEE staticIntDiv.cpp
+
+Lesson 3
+--------
+
+The remainder operator operator% also called modulo operator or 
+modulus operator.
+
+It only works with integer operands.
+
+It's most useful for testing whether a number is evenly divisible by another
+number ( x % y == 0 means that x is evenly divisible by y )
+
+Whenever x % y, y is larger than x, x % y is x
+like 2 % 4 is 0 remainder 2 -> 2 divided by 4 0 times which equals 2, so 2
+remains
+
+% operator behavior in C++ is closer to a remainder operation than
+modulo in math.
+
+In math, -21 modulo 4 = 3
+		 -21 remainder 4 = -1
+
+Note that % result can be negative,
+it means that testing if a number is odd using
+(x % 2) == 1
+fails when x is a negative and odd number 
+
+For this reason, it's better to compare the result against 0,
+which does not have this issue.
+
+Best practice:	
+	Prefer to compare the result of the remainder operator 
+	(operator%) against 0 if possible.
+
+Where's the exponent operator ?
+
+In C++, ^ is Bitwise XOR operator, not exponent.
+To do exponents,
+#include <cmath>
+std::pow(3.0, 4.0); // 3^4
+
+Since it is double type, it is prone to rounding errors.
+If you want to do this for integers, you're better off just doing
+your own function.
+
+
