@@ -140,4 +140,378 @@ Since it is double type, it is prone to rounding errors.
 If you want to do this for integers, you're better off just doing
 your own function.
 
+see intPow.cpp
+
+Lesson 4
+--------
+
+Increment/Decrement
+
+Operator			Symbol				Form			Operation
+
+Prefix Increment	++					++x				increment x,
+														return x
+
+Prefix Decrement	--					--x				decrement x,
+														return x
+
+Postfix Increment	++					x++				copy x,increment x,
+(post-increment)										return the copy
+
+Postfix Decrement	--					x--				copy x,decrement x,
+(post-decrement)										return the copy
+
+see decrImcr.cpp
+
+Best practice:
+	Favor the prefix versions (++x, --x) as they are more performant
+	and less likely to cause surprises.
+
+Use the postfix versions when doing so produces significantly more concise
+or understandable code than the equivalent code written using the
+prefix versions
+
+printCalculation(getValue(), getValue(), getValue()); // this line is ambiguous
+int value { add(x, ++x) }; // is also ambiguous
+Because the order of evaluation of function parameters is compiler defined
+so it is UB by the C++ standard.
+
+in many cases, The sequencing of side effects is not specified.
+x + ++x is unspecified: for x = 1, VS and GCC evaluate this as 2 + 2.
+Clang evaluates this as 1 + 2.
+This is due to differences in when the compilers apply the side effect
+of imcrementing x.
+
+Even when the C++ standard does make it clear how things should be evaluated
+, historically this has been an area where there have been many compiler
+bugs. These problems can generally be avoided by ensuring that any
+variable that has a side effect applied is used no more than once
+in a given statement.
+
+WARNING:
+C++ does not define the order of evaluation for function arguments or
+the operands of operators.
+WARNING:
+Don't use a variable that has a side effect applied to it more than
+once in a given statement. If you do, the result may be undefined.
+One exception is for simple assignment expressions such as x = x + y;
+which is essentially equivalent to x += y;
+
+Lesson 5
+--------
+
+The comma operator allows you to evaluate multiple expressions 
+whenever a single expression is allowed. The comma operator evaluates the 
+left operand, then the right operand, and then returns the result
+of the right operand.
+
+Note that the comma operator has one of the lowest precedence, even lower
+than the operator=,
+which makes z = a, b; and z = (a, b); do different things.
+left one: ((z = a), b);
+right one: (z = (a, b));
+
+Most programmers never use the comma operator except inside for loops.
+Best practice:
+	Avoid using the comma operator, except within for loops.
+
+Do this in different statements/lines.
+
+int func(int x, int y)
+note that this comma is NOT the comma separator but is used as a separator.
+No need to avoid separator commas.
+
+Lesson 6
+--------
+
+Conditional operator
+
+Operator		Symbol		Form		Meaning
+
+Conditional		?:			c ? x : y	If conditional c is true,
+										evaluate x, otherwise evaluate y
+
+The conditional operator ?: sometimes called the arithmetic if operator
+is a ternary operator, because it has historically been C++'s only ternary
+operator, it's also sometimes referred to as the ternary operator.
+?: is basically a shorthand method of a particular type of if-else
+statement.
+
+c ? x : y;
+condition ? expression1 : expression2;
+if condition evaluates to true, expression 1 is evaluated,
+otherwise, expression 2 is evaluated.
+The : and expression2 are not optional, which makes it different
+from if else where the else statement is optional
+
+if (x > y)
+	max = x;
+else
+	max = y;
+
+can be written
+
+max = x > y ? x : y;
+
+Since ?: is evaluated as part of an expression, it can be used
+where if-else can't.
+
+For example, as part of the initialization of a variable,
+
+constexpr int classSize { isClassroomBig ? 30 : 20 };
+
+where this wouldn't compile
+
+if (isClassroomBig)
+	constexpr int classSize { 30 };
+else
+	constexpr int classSize { 20 };
+
+because variables defined inside if-else statements die at the end of
+statement.
+
+Since the conditional operator is pretty low on precedence, it's easy
+writing expressions that don't evaluate as expected.
+So be mindful of the precedence levels of each of your operators
+and use parentheses.
+
+Best practice:
+	Parenthesize the entire conditional operation including operands,
+	when used in a compound expression (expression with other operators)
+
+	For readability, consider parenthesizing the condition if it contains
+	any operators (other than the function call operator)
+
+return isStunned ? 0 : movesLeft;
+int z { (x > y) ? x : y };
+std::cout << (isAfternoon() ? "PM" : "AM");
+std::cout ((x > y) ? x : y);
+
+note:
+x and y must type match
+or
+the compiler must ne able to find a way to convert one or both
+of the second and third operands to matching types.
+
+The conversion rules the compiler uses are fairly complex and may yield
+surprising results in some cases.
+
+In general, it's okay to mix operands of fundamental types
+(excluding mixing signed and unsigned values).
+If either operand is not a fundamental type, it's generally best to
+explicitly convert one or both operands to a matching type yourself
+so you know exactly what you'll get.
+
+If compiler can't convert to a matching type, compile error.
+
+std::cout << ((x != 5) ? x : "x is 5");
+c ? a : b;
+here, a is x of type int and b is "x is 5" of type C-style string
+literal
+
+So, when should you use the conditional operator?
+	
+	Initializing an object with one of two values.
+
+	Assigning one of two values to an object.
+
+	Passing one of two values to a function.
+
+	Returning one of two values from a function
+
+	Printing one of two values
+
+Best practice:
+	Prefer to avoid the conditional operator in complicated expression
+
+Lesson 7
+--------
+
+Best practice:
+	Don't add unnecessary == or != to conditions.
+	if (isEven(5) == true) // is redundant
+	if (isEven(5)) 		// is better
+
+Careful comparing floating point values between eachother since
+rounding errors can lead to unexpected results.
+
+This can be problematic if you compare == of something that is
+close to 0.01 with another one that too is close to 0.01
+They mathematically should be equal, but rounding errors
+made them slightly different.
+
+for >, <, <= and >= it won't cause any problems, but for ==
+and != it would.
+
+For example, consider a game (such as Space Invaders) where you want 
+to determine whether two moving objects (such as a missile and 
+an alien) intersect. If the objects are still far apart, these 
+operators will return the correct answer. If the two objects are 
+extremely close together, you might get an answer either way. In such 
+cases, the wrong answer probably wouldn’t even be noticed 
+(it would just look like a near miss, or near hit) and the game 
+would continue.
+
+WARNING:
+	Avoid using operator== and operator!= to compare floating point
+	values if there is any chance those values have been calculated.
+
+Note that:
+It is safe to compare a floating point literal with a variable of the
+same type that has been initialized with a literal of the same type,
+so long as the number of significant digits in each literal does not
+exceed the minimum precision for that type.
+Float has a minimum precision of 6 significant digits, and double
+has a minimum precision of 15 significant digits.
+
+It is also mostly not safe to compare floating point literals of
+different types. for example, 9.8f == 9.8 will return false.
+
+Lesson 8
+--------
+
+Logical operators
+
+Operator	Symbol		Ex Usage		Operation
+
+Logical NOT   !			!x				true if x is false, false if
+										x is true
+
+Logical AND   &&		x && y			true if x and y are both true
+										false otherwise
+
+Logical OR    ||		x || y			true if either (or both) x or
+										y are true, false otherwise
+
+Logical NOT
+can be used like this
+
+if (!functionThatReturnsABoolean())
+
+Note that Logical NOT has a very high level of precedence, so
+!x > y would result in !x being 1 if 0 and 0 if any other integer.
+then comparing 0 or 1 to y.
+
+Best practice:
+	If logical NOT is intended to operate on the result of other
+	operators, the other operators and their operands need to be
+	enclosed in parentheses.
+
+for single operand use like if (!function)
+No need.
+
+Logical OR is true if either or both operands are true.
+
+0 || 0 = 0
+0 || 1 = 1
+1 || 0 = 1
+1 || 1 = 1
+
+In C++ you need to compare the value for each comparison,
+you can't do if (x == 1 || 0)
+you have to do
+if (x == 1 || x == 0 || x == -1 )
+
+Don't confure bitwise or (|) with logical OR (||)
+
+Logical AND
+
+0 && 0 = 0
+0 && 1 = 0
+1 && 0 = 0
+1 && 1 = 1
+
+Careful, using a logical AND, the compiler knows to stop
+evaluating as soon as one of the multiple comparisons is false.
+It is done for optimization purposes, but that shows us why
+you shouldn't use side-effect operations in compound expressions.
+When it stops before, it is called short-circuit evaluation.
+
+WARNING:
+Avoid using expressions with side effects in conjunction
+with these operators since short circuit evaluation might
+cause them to not evaluate the right operands.
+
+Since logical AND has lower precedence than prefix increment,
+
+int x { 99 };
+if (x == 1 && ++y == 2)
+
+++y would never get evaluated.
+
+SO:
+	The Logical OR and Logical AND operators are an exception to
+	the rule of C++ standard that the operands may evaluate
+	in any order, as the standard explicitly states that the 
+	left operand must evaluate first.
+
+Mixing ANDs and ORs
+
+CAREFUL, they do not have the same precedence.
+So you cannot use them in the same expression, without being mindful
+of their respective precedence and without using parentheses.
+AND has higher precedence than OR, so it will be evaluated
+first.
+
+write
+(a && b) || (c && d)
+instead of
+a && b || c && d
+
+Best Practice:
+	When mixing && and || in a single expression, explicitly 
+	parenthesize each operation to ensure they evaluate how you intend
+
+De Morgan's Law:
+
+!(x && y) is not equivalent to !x && !y
+Here's what it is equivalent to:
+
+!(x && y) is equivalent to !x || !y
+!(x || y) is equivalent to !x && !y
+
+In other words, when you distribute the logical NOT,
+you also need to flip logical AND to logical OR, and vice-versa.
+
+This can be useful when trying to make xomplex expressions easier to
+read.
+
+C++ does not provide an explicit logical XOR operator where
+
+0 XOR 0 = 0
+0 XOR 1 = 1
+1 XOR 0 = 1
+1 XOR 1 = 0
+
+We can use the operator!= to do so by giving it bool operands.
+
+0 != 0 = 0
+0 != 1 = 1
+1 != 0 = 1
+1 != 1 = 0
+
+!= evaluates from left to right,
+if you want to XOR multiple operands
+if (a != b != c != d)
+will evaluate to true if an odd number of the operands (a, b ..) 
+evaluate to true
+
+WARNING:
+	Make sure your operands are of boolean type when using the 
+	operator != as an XOR, otherwise it won't behave as expected.
+
+instead of static_cast your variables to bool to use XOR, you can just
+!!x it, since ! implictly converts to bool and inverses it, !! 
+implictly converts and inverses it twice, which just turns it to
+boolean.
+if (!!a != !!b != !!c)
+
+Alternative operator representations
+
+&& and
+|| or
+!  not
+
+We recommend using the symbolic names instead of the words.
+
 
