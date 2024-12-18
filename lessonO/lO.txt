@@ -1,0 +1,149 @@
+Lesson 1
+--------
+
+On modern computer architectures, the smallest addressable unit of
+memory is a byte.
+This means objects must be at least one byte in size.
+For Boolean values, this means we're wasting 7 bits out of the byte
+we've addressed for it.
+
+This is usally fine, but can be important in storage intensive cases.
+
+C++ gives us tools to manipulate objects at the bit level.
+This is called bit manipulation.
+
+To define a set of bit flags (when individual bits of an object are used
+as Boolean values, the bits are called bit flags) we'll typically use an 
+unsigned integer of the appropriate size, or std::bitset<>
+
+#include <bitset>
+
+std::bitset<8> mybitset {};
+
+Best practice:
+	Bit manipulation is one of the few times when you should
+	unambiguously use unsigned integers (or std::bitset).
+
+Given a sequence of bits, we typically number the bits from right to left
+starting with 0. Each number denotes a bit position.
+
+76543210 Bit position
+00000101 Bit sequence
+
+The bits in position 0 and 2 have value 1, the others have value 0
+
+test() allows us to query whether a bit is a 0 or 1
+set() allows us to turn a bit on (and do nothing if already on)
+reset() allows us to turn a bit off (and dpo nothing if already off)
+flip() allows us to flip a bit value from 0 to 1 and from 1 to 0.
+
+Each of these functions take the position of the bit we want to operate on
+as their only argument.
+
+std::bitset is optimized for speed, not memory.
+std::bitset<8> addresses 4 bytes on 32-bit machines and 8-bytes on
+64 bts machines. Even though it technically only needs one byte.
+
+size() returns the number of bits in the bitset
+count() returns the number of bits in the bitset that are set to true
+all() returns a Boolean indicating whether all bits are set to true
+any() returns a Boolean indicating whether any bits are set to true
+none() returns a Boolean indicating whether no bits are set to true
+
+C++ provides 6 bit manipulation operators,
+often called bitwise operators.
+
+Operator	Symbol	Form		Operation
+
+left shift	<<		x << y		all bits in x shifted left by y num bits
+right shift >>		x >> y		all bits in x shifted right by y num bits
+bitwise NOT ~		~x			all bits in x flipped
+bitwise AND &		x & y		each bit in x AND each bit in y
+bitwise OR  |		x | y		each bit in x OR each bit in y
+bitwise XOR ^		x ^ y		each bit in x XOR each bit in y
+
+Best practice:
+	To avoid surprises, use the bitwise operators with unsigned operands
+	or std::bitset
+
+0011 << 2 is 1100 (New bits shifted in receive the value 0)
+0011 << 4 is 0000 (bits shifted off are lost forever)
+
+in the case that you use std::cout or std::cin with bitwise shifts in the
+same expression, make sure to parenthesize the bit shift to not confuse
+the << and >> bitwise operators with the extraction/insertion operators.
+
+bs1 ^ bs2 ^ bs3 ^ bs3
+If there are an even number of 1 bits in a column the result is 1.
+If there are an odd number of 1 bits in a column  the result is 0.
+
+Operator				Form		Operation
+
+left shift  assignment	x <<= y		assign x all bits in x shifted left by y num bits
+right shift	assignment	x >>= y		assign x all bits in x shifted right by y num bits
+bitwise OR	assignment	x |= y		assign x each bit in x OR each bit in y
+bitwise AND	assignment	x &= y		assign x each bit in x AND each bit in y
+bitwise XOR	assignment	x ^= y		assign x each bit in x XOR each bit in y
+
+For bitwise NOT assignment, use the usual x = ~x;
+
+WARNING:
+	Bitwise operators will promote operands with narrower integral types
+	to int or unsigned int.
+	operator~ and operator<< are width-sensitive and may produce different
+	results depending on the width of the operand.
+	static_cast the result of such bitwise operations back to the 
+	narrower integral type before using to ensure correct results.
+
+Lesson 3
+--------
+
+A bit mask is a predefined set of bits that is used to select which
+specific bits will be modified by subsequent operations.
+
+The bit mask blocks the bitwise operators from touching bits we don't
+want modified, and allows access to the ones we do want modified.
+
+Defining bit masks in C++14
+
+Define one bit for each bit position, use 0s to mask out the bits we don't
+care about, and 1s to denote the bits we want modified.
+Although bit masks can be literals, they're often defined as symbolic
+constants so they can be given a meaningful name and easily reused.
+
+Because C++14 supports binary literals, defining these is easy:
+
+constexpr std::uint8_t mask0 { 0b10000000 };
+constexpr std::uint8_t mask1 { 0b01000000 };
+constexpr std::uint8_t mask2 { 0b00100000 };
+constexpr std::uint8_t mask3 { 0b00010000 };
+constexpr std::uint8_t mask4 { 0b00001000 };
+constexpr std::uint8_t mask5 { 0b00000100 };
+constexpr std::uint8_t mask6 { 0b00000010 };
+constexpr std::uint8_t mask7 { 0b00000001 };
+
+Before C++11, no binary literals, so it's a bit different:
+
+// using hexadecimal, note that 0x01 can just be 0x1, 0x08 can be 0x8...
+constexpr std::uint8_t mask0 { 0x01 }; // 0000 0001
+constexpr std::uint8_t mask1 { 0x02 }; // 0000 0010
+constexpr std::uint8_t mask2 { 0x04 }; // 0000 0100
+constexpr std::uint8_t mask3 { 0x08 }; // 0000 1000
+constexpr std::uint8_t mask4 { 0x10 }; // 0001 0000
+constexpr std::uint8_t mask5 { 0x20 }; // 0010 0000
+constexpr std::uint8_t mask5 { 0x40 }; // 0100 0000
+constexpr std::uint8_t mask5 { 0x80 }; // 1000 0000
+
+//using bit shift operator
+constexpr std::uint8_t mask0 { 1 << 0 }; // 0000 0001 -> 0000 0001
+constexpr std::uint8_t mask1 { 1 << 1 }; // 0000 0001 -> 0000 0010
+constexpr std::uint8_t mask2 { 1 << 2 }; // 0000 0001 -> 0000 0100
+constexpr std::uint8_t mask3 { 1 << 3 }; // 0000 0001 -> 0000 1000
+constexpr std::uint8_t mask4 { 1 << 4 }; // 0000 0001 -> 0001 0000
+constexpr std::uint8_t mask5 { 1 << 5 }; // 0000 0001 -> 0010 0000
+constexpr std::uint8_t mask6 { 1 << 6 }; // 0000 0001 -> 0100 0000
+constexpr std::uint8_t mask7 { 1 << 7 }; // 0000 0001 -> 1000 0000
+
+see RGBA.cpp
+
+
